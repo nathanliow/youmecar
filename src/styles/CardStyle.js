@@ -7,27 +7,12 @@ const { definePartsStyle, defineMultiStyleConfig } =
 const variants = {
   RideCard: definePartsStyle((props) => {
     const theme = useTheme();
-    const primaryColor = theme.colors.primary; 
     const secondaryColor = theme.colors.secondary; 
 
     return {
       container: {
         backgroundColor: secondaryColor, 
-        borderColor: 'green',
-        borderWidth: '3px',
         borderRadius: '20px',
-      },
-      header: {
-        borderColor: 'red',
-        borderWidth: '1px',
-      },
-      body: {
-        borderColor: 'blue',
-        borderWidth: '1px',
-      },
-      footer: {
-        borderColor: 'red',
-        borderWidth: '1px',
       },
     };
   }),
