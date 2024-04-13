@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { 
     Card, 
     CardHeader, 
@@ -16,6 +17,13 @@ import {
 import { IoMdPerson } from "react-icons/io";
 import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 import { ReactComponent as ProfileIcon2 } from "../../public/profileIcons/profileIcon2.svg";
+import { ReactComponent as ProfileIcon3 } from "../../public/profileIcons/profileIcon3.svg";
+import { ReactComponent as ProfileIcon4 } from "../../public/profileIcons/profileIcon4.svg";
+import { ReactComponent as ProfileIcon5 } from "../../public/profileIcons/profileIcon5.svg";
+import { ReactComponent as ProfileIcon6 } from "../../public/profileIcons/profileIcon6.svg";
+import { ReactComponent as ProfileIcon7 } from "../../public/profileIcons/profileIcon7.svg";
+
+
 
 function RideCard({ name, time, numRiders, maxRiders, riders }) {
     const theme = useTheme();
@@ -108,7 +116,7 @@ function RideCard({ name, time, numRiders, maxRiders, riders }) {
                             <ListItem 
                                 key={index} 
                             >
-                                <ListIcon as={ProfileIcon2} color={textPrimary} />
+                                <ListIcon as={ProfileIcon1} color={textPrimary} />
                                 {rider}
                             </ListItem>
                             ))}
