@@ -1,21 +1,18 @@
 import React from 'react';
 import './App.css';
-import RideCard from './components/Card/RideCard';
+import LocationDropdown from './components/LocationDropdown';
+import EventCard from './components/Card/EventCard';
+
 
 function App() {
   return (
     <div className="App">
         <header className="App-header">
-            <RideCard 
-                name="John Ahn" 
-                time="1:25 PM" 
-                numRiders="4" 
-                maxRiders="4"
-                riders={["Nathan Liow", "Serena Oh", "Joe Mama", "Mama Joe"]}
-            />
-            <p>
-            Component above! LOL
-            </p>
+            <div className="container">
+                <LocationDropdown name='PCL/Jester'/>
+                <LocationDropdown name='Quarters Nueces'/>
+                <EventCard name="Church" location="NW Fellowship" time="2:00 PM" numGoing="50"/>
+            </div>
         </header>
     </div>
   );

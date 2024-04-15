@@ -1,10 +1,10 @@
 <!-- black to gray -->
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlnsxlink="http://www.w3.org/1999/xlink" xmlnssvgjs="http://svgjs.dev/svgjs" viewBox="0 0 700 700" width="700" height="700" opacity="1">
   <defs>
-    <linearGradient gradientTransform="rotate(150, 0.5, 0.5)" x1="50%" y1="0%" x2="50%" y2="100%" id="ffflux-gradient">
+    <linearGradient gradientTransform="rotate(150, 0.5, 0.5)" x1="50%" y1="0%" x2="50%" y2="100%" id="profileIcon5">
       <stop stop-color="hsl(0, 0%, 53%)" stop-opacity="1" offset="0%"></stop>
       <stop stop-color="hsl(0, 0%, 0%)" stop-opacity="1" offset="100%"></stop>
     </linearGradient>
   </defs>
-  <circle cx="350" cy="350" r="350" fill="url(#ffflux-gradient)"></circle>
+  <circle cx="350" cy="350" r="350" fill="url(#profileIcon5)"></circle>
 </svg>

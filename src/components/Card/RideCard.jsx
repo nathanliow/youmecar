@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
     Card, 
     CardHeader, 
@@ -16,16 +16,14 @@ import {
 } from '@chakra-ui/react'
 import { IoMdPerson } from "react-icons/io";
 import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
-import { ReactComponent as ProfileIcon2 } from "../../public/profileIcons/profileIcon2.svg";
-import { ReactComponent as ProfileIcon3 } from "../../public/profileIcons/profileIcon3.svg";
-import { ReactComponent as ProfileIcon4 } from "../../public/profileIcons/profileIcon4.svg";
-import { ReactComponent as ProfileIcon5 } from "../../public/profileIcons/profileIcon5.svg";
-import { ReactComponent as ProfileIcon6 } from "../../public/profileIcons/profileIcon6.svg";
-import { ReactComponent as ProfileIcon7 } from "../../public/profileIcons/profileIcon7.svg";
+// import { ReactComponent as ProfileIcon2 } from "../../public/profileIcons/profileIcon2.svg";
+// import { ReactComponent as ProfileIcon3 } from "../../public/profileIcons/profileIcon3.svg";
+// import { ReactComponent as ProfileIcon4 } from "../../public/profileIcons/profileIcon4.svg";
+// import { ReactComponent as ProfileIcon5 } from "../../public/profileIcons/profileIcon5.svg";
+// import { ReactComponent as ProfileIcon6 } from "../../public/profileIcons/profileIcon6.svg";
+// import { ReactComponent as ProfileIcon7 } from "../../public/profileIcons/profileIcon7.svg";
 
-
-
-function RideCard({ name, time, numRiders, maxRiders, riders }) {
+function RideCard({ driver, time, numRiders, maxRiders, riders }) {
     const theme = useTheme();
     const textPrimary = theme.colors.textPrimary; 
     const textSecondary = theme.colors.textSecondary;
@@ -40,13 +38,14 @@ function RideCard({ name, time, numRiders, maxRiders, riders }) {
             direction='row'
             overflow='hidden'
             variant='RideCard'
-            maxW='90%'
+            maxW='100%'
             onClick={handleClick}
             cursor="pointer"
+            minH='107px'
         >
             <Image
                 objectFit='cover'
-                maxW={{ base: '30%', sm: '120px' }}
+                maxW='30%'
                 src='https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60'
                 alt='Caffe Latte'
             />
@@ -63,7 +62,7 @@ function RideCard({ name, time, numRiders, maxRiders, riders }) {
                             fontSize='lg' 
                             color={textPrimary}
                         >
-                            {name}
+                            {driver}
                         </Text>
                     </CardHeader>
 
@@ -90,13 +89,12 @@ function RideCard({ name, time, numRiders, maxRiders, riders }) {
                         display='flex' 
                         alignItems='center' 
                         justifyContent='center'
+                        fontSize='lg' 
+                        fontWeight={500}
+                        color={textPrimary}
                     >
                         <IoMdPerson/>
-                        <Text 
-                            fontWeight={500}
-                            fontSize='lg' 
-                            color={textPrimary}
-                        >
+                        <Text>
                             {numRiders}/{maxRiders}
                         </Text>
                     </CardHeader>
@@ -113,12 +111,12 @@ function RideCard({ name, time, numRiders, maxRiders, riders }) {
                             color={textPrimary}
                         >
                             {riders.map((rider, index) => (
-                            <ListItem 
-                                key={index} 
-                            >
-                                <ListIcon as={ProfileIcon1} color={textPrimary} />
-                                {rider}
-                            </ListItem>
+                                <ListItem key={index}>
+                                    {/* <ListIcon as={rider.profileIcon} color={textPrimary} /> */}
+                                    {/* {rider.name} */}
+                                    <ListIcon as={ProfileIcon1} color={textPrimary} />
+                                    {rider}
+                                </ListItem>
                             ))}
                         </List>
                     </CardBody>
