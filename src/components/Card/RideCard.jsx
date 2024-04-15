@@ -52,7 +52,7 @@ function RideCard({ driver, time, numRiders, maxRiders, riders }) {
 
                 <Stack gap='0px'>
                     <CardHeader 
-                        pt='5px' 
+                        pt='10px' 
                         pb='5px' 
                         pl='20px'
                     >
@@ -84,7 +84,7 @@ function RideCard({ driver, time, numRiders, maxRiders, riders }) {
 
                 <Stack gap='0px'>
                     <CardHeader 
-                        pt='5px' 
+                        pt='10px' 
                         pb='5px' 
                         display='flex' 
                         alignItems='center' 

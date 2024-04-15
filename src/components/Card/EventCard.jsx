@@ -40,7 +40,7 @@ function EventCard({ name, location, time, numGoing }) {
 
                 <Stack gap='0px'>
                     <CardHeader 
-                        pt='5px' 
+                        pt='10px' 
                         pb='5px' 
                         pl='20px'
                         fontWeight='bold' 
