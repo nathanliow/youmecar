@@ -3,12 +3,10 @@ import {
     Card, 
     CardHeader, 
     CardBody, 
-    CardFooter,
     Image, 
     Stack, 
     Text,
     useTheme,
-    Spacer
 } from '@chakra-ui/react'
 import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 
@@ -26,7 +24,7 @@ function EventCard({ name, location, time, numGoing }) {
         <Card
             direction='row'
             overflow='hidden'
-            variant='RideCard'
+            variant='Card'
             maxW='95%'
             onClick={handleClick}
             cursor="pointer"

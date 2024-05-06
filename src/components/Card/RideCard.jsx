@@ -37,7 +37,7 @@ function RideCard({ driver, time, numRiders, maxRiders, riders }) {
         <Card
             direction='row'
             overflow='hidden'
-            variant='RideCard'
+            variant='Card'
             maxW='100%'
             onClick={handleClick}
             cursor="pointer"

@@ -5,7 +5,7 @@ const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(cardAnatomy.keys);
 
 const variants = {
-    RideCard: definePartsStyle((props) => {
+    Card: definePartsStyle((props) => {
         const theme = useTheme();
         const secondaryColor = theme.colors.secondary; 
 
