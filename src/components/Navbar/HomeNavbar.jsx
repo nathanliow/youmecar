@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme, IconButton } from '@chakra-ui/react'
 import { HamburgerIcon } from '@chakra-ui/icons'
-import { ReactComponent as ProfileIcon1 } from "../public/profileIcons/profileIcon1.svg";
+import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 
 function HomeNavbar() {
     const theme = useTheme();

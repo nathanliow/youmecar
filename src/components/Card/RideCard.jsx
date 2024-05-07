@@ -7,7 +7,8 @@ import {
     Stack, 
     Text,
     useTheme,
-    Spacer
+    Spacer,
+    useDisclosure,
 } from '@chakra-ui/react'
 import {
     List,
@@ -22,18 +23,22 @@ import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profil
 // import { ReactComponent as ProfileIcon5 } from "../../public/profileIcons/profileIcon5.svg";
 // import { ReactComponent as ProfileIcon6 } from "../../public/profileIcons/profileIcon6.svg";
 // import { ReactComponent as ProfileIcon7 } from "../../public/profileIcons/profileIcon7.svg";
+import RideDrawer from '../Drawer/RideDrawer';
 
 function RideCard({ driver, time, numRiders, maxRiders, riders }) {
     const theme = useTheme();
     const textPrimary = theme.colors.textPrimary; 
     const textSecondary = theme.colors.textSecondary;
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const handleClick = () => {
         // Handle click action here
+        onOpen();
         console.log("Card clicked!");
     };
 
     return (
+    <>
         <Card
             direction='row'
             overflow='hidden'
@@ -50,78 +55,80 @@ function RideCard({ driver, time, numRiders, maxRiders, riders }) {
                 alt='Caffe Latte'
             />
 
-                <Stack gap='0px'>
-                    <CardHeader 
-                        pt='10px' 
-                        pb='5px' 
-                        pl='20px'
-                    >
-                        <Text 
-                            align='left' 
-                            fontWeight='bold' 
-                            fontSize='lg' 
-                            color={textPrimary}
-                        >
-                            {driver}
-                        </Text>
-                    </CardHeader>
-
-                    <CardBody 
-                        pt='0px' 
-                        pl='20px'
-                    >
-                        <Text 
-                            align='left' 
-                            fontSize='sm' 
-                            color={textSecondary}
-                        >
-                            Pick up: {time}
-                        </Text>
-                    </CardBody>
-                </Stack>
-
-                <Spacer />
-
-                <Stack gap='0px'>
-                    <CardHeader 
-                        pt='10px' 
-                        pb='5px' 
-                        display='flex' 
-                        alignItems='center' 
-                        justifyContent='center'
+            <Stack gap='0px'>
+                <CardHeader 
+                    pt='10px' 
+                    pb='5px' 
+                    pl='20px'
+                >
+                    <Text 
+                        align='left' 
+                        fontWeight='bold' 
                         fontSize='lg' 
-                        fontWeight={500}
                         color={textPrimary}
                     >
-                        <IoMdPerson/>
-                        <Text>
-                            {numRiders}/{maxRiders}
-                        </Text>
-                    </CardHeader>
+                        {driver}
+                    </Text>
+                </CardHeader>
 
-                    <CardBody 
-                        pt='0px' 
-                        pl='4px' 
-                        pb='10px' 
-                        pr='20px'
+                <CardBody 
+                    pt='0px' 
+                    pl='20px'
+                >
+                    <Text 
+                        align='left' 
+                        fontSize='sm' 
+                        color={textSecondary}
                     >
-                        <List 
-                            align='left' 
-                            fontSize='10px' 
-                            color={textPrimary}
-                        >
-                            {riders.map((rider, index) => (
-                                <ListItem key={index}>
-                                    {/* <ListIcon as={rider.profileIcon} color={textPrimary} /> */}
-                                    {/* {rider.name} */}
-                                    <ListIcon as={ProfileIcon1} color={textPrimary} />
-                                    {rider}
-                                </ListItem>
-                            ))}
-                        </List>
-                    </CardBody>
-                </Stack>
+                        Pick up: {time}
+                    </Text>
+                </CardBody>
+            </Stack>
+
+            <Spacer />
+
+            <Stack gap='0px'>
+                <CardHeader 
+                    pt='10px' 
+                    pb='5px' 
+                    display='flex' 
+                    alignItems='center' 
+                    justifyContent='center'
+                    fontSize='lg' 
+                    fontWeight={500}
+                    color={textPrimary}
+                >
+                    <IoMdPerson/>
+                    <Text>
+                        {numRiders}/{maxRiders}
+                    </Text>
+                </CardHeader>
+
+                <CardBody 
+                    pt='0px' 
+                    pl='4px' 
+                    pb='10px' 
+                    pr='20px'
+                >
+                    <List 
+                        align='left' 
+                        fontSize='10px' 
+                        color={textPrimary}
+                    >
+                        {riders.map((rider, index) => (
+                            <ListItem key={index}>
+                                {/* <ListIcon as={rider.profileIcon} color={textPrimary} /> */}
+                                {/* {rider.name} */}
+                                <ListIcon as={ProfileIcon1} color={textPrimary} />
+                                {rider}
+                            </ListItem>
+                        ))}
+                    </List>
+                </CardBody>
+            </Stack>
         </Card>
+        <RideDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
+    </>
     )
 }
 

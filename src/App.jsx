@@ -2,8 +2,8 @@ import React from 'react';
 import './App.css';
 import LocationDropdown from './components/LocationDropdown';
 import EventCard from './components/Card/EventCard';
-import HomeNavbar from './components/HomeNavbar';
-import EventNavbar from './components/EventNavbar';
+import HomeNavbar from './components/Navbar/HomeNavbar';
+import EventNavbar from './components/Navbar/EventNavbar';
 
 function App() {
   return (
