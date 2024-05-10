@@ -5,6 +5,8 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { ChakraProvider } from '@chakra-ui/react'
 import LightTheme from './styles/themes/LightTheme.js'
+import DarkTheme from './styles/themes/DarkTheme.js'
+import app from './Firebase';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

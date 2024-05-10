@@ -1,8 +1,7 @@
-import { Accordion, extendTheme } from '@chakra-ui/react'
+import { extendTheme } from '@chakra-ui/react'
 import { cardStyle } from '../CardStyle';
 import { DropdownStyle } from '../DropdownStyle';
 import { ButtonStyle } from '../ButtonStyle';
-
 
 const LightTheme = extendTheme({
   colors: {

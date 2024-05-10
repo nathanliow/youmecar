@@ -6,7 +6,6 @@ function RideDrawer({ isOpen, onClose }) {
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />
-        <DrawerHeader>Create your account</DrawerHeader>
 
         <DrawerBody>
             

@@ -1,0 +1,25 @@
+Collections: Organizations
+    Documents: specific org
+        Collection: events
+            Documents: specific event
+                Data:
+                    - name
+                    - location
+                    - time
+                    - numGoing
+                    Subcollection: Rides
+                        Subdocuments: Riders
+                            Subdata:
+                                - user.first_name
+                                - user.last_name
+                                - profileIcon
+
+Collections: users
+    Documents: specific user
+        Data: 
+            - name
+            - username
+            - events attended
+            - events driven
+            - events organized
+            - most common ride partners

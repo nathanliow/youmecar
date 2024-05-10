@@ -28,4 +28,18 @@ const back = defineStyle({
   }
 });
 
-export const ButtonStyle = defineStyleConfig({ variants: { menu, back } });
+const darkMode = defineStyle({
+  fontSize: "30px",
+  color: "black",
+  background: "white", 
+  _hover: {
+    background: "#E8E8E8",
+  },
+
+  _dark: {
+    color: "white",
+    background: "black", 
+  }
+});
+
+export const ButtonStyle = defineStyleConfig({ variants: { menu, back, darkMode } });

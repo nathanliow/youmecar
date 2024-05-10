@@ -1,6 +1,5 @@
 User:
- - first name
- - last name
+ - name
  - username
  - events attended
  - events driven
@@ -8,8 +7,7 @@ User:
  - most common ride partners
 
 Rider:
- - user.first_name
- - user.last_name
+ - user.name
  - profileIcon
 
 Ride:
