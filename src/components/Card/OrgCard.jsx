@@ -7,12 +7,11 @@ import {
     Stack, 
     Text,
     useTheme,
-    Box,
 } from '@chakra-ui/react'
 import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 import { ChevronRightIcon } from '@chakra-ui/icons'
 
-function EventCard({ name, location, time, numGoing }) {
+function OrgCard({ name, numMembers }) {
     const theme = useTheme();
     const textPrimary = theme.colors.textPrimary; 
     const textSecondary = theme.colors.textSecondary;
@@ -59,20 +58,6 @@ function EventCard({ name, location, time, numGoing }) {
                     <CardBody 
                         pt='0px' 
                     >
-                        <Text 
-                            align='left' 
-                            fontSize='sm' 
-                            color={textSecondary}
-                        >
-                            Location: <span style={{ fontWeight: 'bold' }}>{location}</span>
-                        </Text>
-                        <Text 
-                            align='left' 
-                            fontSize='sm' 
-                            color={textSecondary}
-                        >
-                            Pick up: <span style={{ fontWeight: 'bold' }}>{time}</span>
-                        </Text>
                         <br/>
                         <Text 
                             align='left' 
@@ -86,7 +71,7 @@ function EventCard({ name, location, time, numGoing }) {
                                     <ProfileIcon1 width='20px' height='20px' style={{ marginLeft: '-5px' }} />
                                 </div>
                                 <div>
-                                    <span style={{ fontWeight: 'bold' }}>{numGoing}</span> going
+                                    <span style={{ fontWeight: 'bold' }}>{numMembers}</span> Members
                                 </div>
                             </div>
                         </Text>
@@ -100,4 +85,4 @@ function EventCard({ name, location, time, numGoing }) {
     )
 }
 
-export default EventCard;
+export default OrgCard;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme, IconButton } from '@chakra-ui/react'
-import { HamburgerIcon } from '@chakra-ui/icons'
+import { ChevronLeftIcon } from '@chakra-ui/icons'
 import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 
 function HomeNavbar() {
@@ -19,9 +19,9 @@ function HomeNavbar() {
     return (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', backgroundColor: primary, width: '100%'}}>
             <IconButton
-                variant='menu'
-                aria-label='Menu Button'
-                icon={<HamburgerIcon />}
+                variant='back'
+                aria-label='Back Button'
+                icon={<ChevronLeftIcon />}
                 onClick={handleMenuClick}
             />
             <div style={{ textAlign: 'center' }}>

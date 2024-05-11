@@ -12,7 +12,7 @@ Rider:
 
 Ride:
  - driver
- - time
+ - pickUpTime
  - numRiders
  - maxRiders
  - Riders[]
@@ -26,3 +26,9 @@ Event:
  - location
  - time
  - numGoing
+
+ Organization:
+ - name
+ - admins
+ - Events[]
+ - numMembers

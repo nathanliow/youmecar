@@ -7,7 +7,6 @@ import {
     Stack, 
     Text,
     useTheme,
-    Spacer,
     useDisclosure,
 } from '@chakra-ui/react'
 import {
@@ -23,7 +22,7 @@ import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profil
 // import { ReactComponent as ProfileIcon5 } from "../../public/profileIcons/profileIcon5.svg";
 // import { ReactComponent as ProfileIcon6 } from "../../public/profileIcons/profileIcon6.svg";
 // import { ReactComponent as ProfileIcon7 } from "../../public/profileIcons/profileIcon7.svg";
-import RideDrawer from '../Drawer/RideDrawer';
+import RideDrawer from '../Drawer/RideDrawer'
 
 function RideCard({ driver, time, numRiders, maxRiders, riders }) {
     const theme = useTheme();
@@ -43,7 +42,7 @@ function RideCard({ driver, time, numRiders, maxRiders, riders }) {
             direction='row'
             overflow='hidden'
             variant='Card'
-            maxW='100%'
+            maxW='95%'
             onClick={handleClick}
             cursor="pointer"
             minH='107px'
@@ -51,15 +50,14 @@ function RideCard({ driver, time, numRiders, maxRiders, riders }) {
             <Image
                 objectFit='cover'
                 maxW='30%'
-                src='https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60'
-                alt='Caffe Latte'
+                src="cars/dark_sedan.png"
+                alt='Car Image'
             />
 
-            <Stack gap='0px'>
+            <Stack gap='0px' maxW='154px'>
                 <CardHeader 
                     pt='10px' 
                     pb='5px' 
-                    pl='20px'
                 >
                     <Text 
                         align='left' 
@@ -73,19 +71,16 @@ function RideCard({ driver, time, numRiders, maxRiders, riders }) {
 
                 <CardBody 
                     pt='0px' 
-                    pl='20px'
                 >
                     <Text 
                         align='left' 
                         fontSize='sm' 
                         color={textSecondary}
                     >
-                        Pick up: {time}
+                        Pick up: <span style={{ fontWeight: 'bold' }}>{time}</span>
                     </Text>
                 </CardBody>
             </Stack>
-
-            <Spacer />
 
             <Stack gap='0px'>
                 <CardHeader 
@@ -113,12 +108,11 @@ function RideCard({ driver, time, numRiders, maxRiders, riders }) {
                     <List 
                         align='left' 
                         fontSize='10px' 
-                        color={textPrimary}
+                        color={textSecondary}
+                        fontWeight='bold'
                     >
                         {riders.map((rider, index) => (
                             <ListItem key={index}>
-                                {/* <ListIcon as={rider.profileIcon} color={textPrimary} /> */}
-                                {/* {rider.name} */}
                                 <ListIcon as={ProfileIcon1} color={textPrimary} />
                                 {rider}
                             </ListItem>
