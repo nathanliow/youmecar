@@ -1,6 +1,6 @@
-import React from 'react';
-import { useTheme } from '@chakra-ui/react';
-import { handleGoogleSignIn, handleSignOut } from './../Firebase';
+import React from 'react'
+import { useTheme } from '@chakra-ui/react'
+import { handleGoogleSignIn, handleSignOut } from './../Firebase'
 
 function LoginPage() {
   const theme = useTheme();
@@ -17,7 +17,7 @@ function LoginPage() {
   };
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <button style={{ color: textPrimary }} onClick={handleClick}>
         Google Sign In
       </button>

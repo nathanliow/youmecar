@@ -7,9 +7,11 @@ import {
   DrawerContent, 
   DrawerCloseButton, 
   IconButton,
+  Spacer
 } from '@chakra-ui/react'
 import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
-import { IoMdPerson, IoMdSettings, IoMdMoon } from "react-icons/io";
+import { IoMdPerson, IoMdSettings, IoMdMoon, IoIosLogOut } from "react-icons/io";
+import { handleSignOut } from '../../Firebase';
 
 function ProfileDrawer({ isOpen, onClose }) {
   const handleProfileClick = () => {
@@ -56,6 +58,13 @@ function ProfileDrawer({ isOpen, onClose }) {
             variant='darkMode'
             aria-label='Toggle Dark Mode'
             icon={<IoMdMoon />}
+          />
+          <Spacer/>
+          <IconButton
+            variant='logOut'
+            aria-label='Log Out'
+            icon={<IoIosLogOut />}
+            onClick={handleSignOut}
           />
         </DrawerFooter>
       </DrawerContent>

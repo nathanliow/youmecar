@@ -10,7 +10,7 @@ function TestPage() {
   const textPrimary = theme.colors.textPrimary; 
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <EventNavbar/>
       <OrgCard name="Acts College Fellowship" numMembers="473"/>
       <EventCard name="Church" location="NW Fellowship" time="2:00 PM" numGoing="53"/>
