@@ -7,14 +7,16 @@ import {
     Stack, 
     Text,
     useTheme,
+    useColorMode,
 } from '@chakra-ui/react'
 import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 import { ChevronRightIcon } from '@chakra-ui/icons'
 
 function OrgCard({ name, numMembers }) {
     const theme = useTheme();
-    const textPrimary = theme.colors.textPrimary; 
-    const textSecondary = theme.colors.textSecondary;
+    const { colorMode } = useColorMode();
+    const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
+    const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
 
     const handleClick = () => {
         // Handle click action here

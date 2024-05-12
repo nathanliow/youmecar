@@ -1,12 +1,13 @@
 import React from 'react'
-import { useTheme } from '@chakra-ui/react'
+import { useTheme, useColorMode } from '@chakra-ui/react'
 import HomeNavbar from '.././components/Navbar/HomeNavbar.jsx'
 import OrgCard from '../components/Card/OrgCard.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 
 function HomePage() {
   const theme = useTheme();
-  const textPrimary = theme.colors.textPrimary; 
+  const { colorMode } = useColorMode();
+  const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
 
   return (
     <div>

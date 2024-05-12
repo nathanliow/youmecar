@@ -8,6 +8,7 @@ import {
     Text,
     useTheme,
     useDisclosure,
+    useColorMode,
 } from '@chakra-ui/react'
 import {
     List,
@@ -26,8 +27,9 @@ import RideDrawer from '../Drawer/RideDrawer'
 
 function RideCard({ driver, time, numRiders, maxRiders, riders }) {
     const theme = useTheme();
-    const textPrimary = theme.colors.textPrimary; 
-    const textSecondary = theme.colors.textSecondary;
+    const { colorMode } = useColorMode();
+    const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
+    const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const handleClick = () => {

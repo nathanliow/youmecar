@@ -1,5 +1,5 @@
 import { drawerAnatomy as parts } from '@chakra-ui/anatomy'
-import { createMultiStyleConfigHelpers, useTheme } from '@chakra-ui/react';
+import { createMultiStyleConfigHelpers, useTheme, useColorMode } from '@chakra-ui/react';
 
 const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(parts.keys)
@@ -7,17 +7,13 @@ const { definePartsStyle, defineMultiStyleConfig } =
 const variants = {
     Profile: definePartsStyle(() => {
         const theme = useTheme();
-        const primary = theme.colors.primary; 
-        const textPrimary = theme.colors.textPrimary;
+        const { colorMode } = useColorMode();
+        const secondary = colorMode === "light" ? theme.colors.secondary.light : theme.colors.secondary.dark;
 
         return {
             dialog: {
-                bg: primary,
-                color: textPrimary,
+                bg: secondary,
             },
-            overlay: {
-                bg: 'whiteAlpha.200'
-            }
         };
     }),
 };

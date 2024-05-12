@@ -1,13 +1,14 @@
 import React from 'react';
-import { useTheme, IconButton, useDisclosure } from '@chakra-ui/react'
+import { useTheme, IconButton, useDisclosure, useColorMode } from '@chakra-ui/react'
 import { ChevronLeftIcon } from '@chakra-ui/icons'
 import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 import ProfileDrawer from '../Drawer/ProfileDrawer';
 
 function EventNavbar() {
     const theme = useTheme();
-    const primary = theme.primary;
-    const textPrimary = theme.colors.textPrimary; 
+    const { colorMode } = useColorMode();
+    const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
+    const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark; 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const handleBackClick = () => {

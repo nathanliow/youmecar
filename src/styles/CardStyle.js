@@ -1,5 +1,5 @@
 import { cardAnatomy } from '@chakra-ui/anatomy';
-import { createMultiStyleConfigHelpers, useTheme } from '@chakra-ui/react';
+import { createMultiStyleConfigHelpers, useTheme, useColorMode } from '@chakra-ui/react';
 
 const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(cardAnatomy.keys);
@@ -7,11 +7,12 @@ const { definePartsStyle, defineMultiStyleConfig } =
 const variants = {
     Card: definePartsStyle(() => {
         const theme = useTheme();
-        const secondaryColor = theme.colors.secondary; 
+        const { colorMode } = useColorMode()
+        const secondary = colorMode === "light" ? theme.colors.secondary.light : theme.colors.secondary.dark;
 
         return {
             container: {
-                backgroundColor: secondaryColor, 
+                backgroundColor: secondary, 
                 borderRadius: '20px',
             },
             footer: {

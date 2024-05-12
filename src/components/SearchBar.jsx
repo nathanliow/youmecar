@@ -3,15 +3,16 @@ import {
     Input,
     InputLeftElement,
     useTheme,
+    useColorMode,
 } from '@chakra-ui/react'
 import { IoMdSearch } from "react-icons/io";
 
   
 function SearchBar() {
     const theme = useTheme();
-    const primary = theme.colors.primary; 
-    const textPrimary = theme.colors.textPrimary; 
-    const textSecondary = theme.colors.textSecondary;
+    const { colorMode } = useColorMode();
+    const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark; 
+    const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark; 
 
     return (
       <>

@@ -3,18 +3,20 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import { ChakraProvider } from '@chakra-ui/react'
-import LightTheme from './styles/themes/LightTheme.js'
-import DarkTheme from './styles/themes/DarkTheme.js'
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
+import theme from './styles/theme'
 import app from './Firebase';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <ChakraProvider theme={LightTheme}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </ChakraProvider>
+  <>
+    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+    <ChakraProvider theme={theme}>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </ChakraProvider>
+  </>
 );
 
 // If you want your app to work offline and load faster, you can change

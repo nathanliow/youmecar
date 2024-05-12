@@ -7,13 +7,16 @@ import {
   DrawerContent, 
   DrawerCloseButton, 
   IconButton,
-  Spacer
+  Spacer,
+  useColorMode,
 } from '@chakra-ui/react'
 import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 import { IoMdPerson, IoMdSettings, IoMdMoon, IoIosLogOut } from "react-icons/io";
 import { handleSignOut } from '../../Firebase';
 
-function ProfileDrawer({ isOpen, onClose }) {
+function ProfileDrawer({ isOpen, onClose, toggleDarkMode }) {
+    const { toggleColorMode } = useColorMode()
+
   const handleProfileClick = () => {
     console.log("Profile Page clicked!");
   };
@@ -58,6 +61,7 @@ function ProfileDrawer({ isOpen, onClose }) {
             variant='darkMode'
             aria-label='Toggle Dark Mode'
             icon={<IoMdMoon />}
+            onClick={toggleColorMode}
           />
           <Spacer/>
           <IconButton
