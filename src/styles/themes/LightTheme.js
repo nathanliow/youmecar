@@ -1,7 +1,8 @@
 import { extendTheme } from '@chakra-ui/react'
-import { cardStyle } from '../CardStyle';
-import { DropdownStyle } from '../DropdownStyle';
-import { ButtonStyle } from '../ButtonStyle';
+import { CardStyle } from '../CardStyle'
+import { DropdownStyle } from '../DropdownStyle'
+import { ButtonStyle } from '../ButtonStyle'
+import { DrawerStyle } from '../DrawerStyle'
 
 const LightTheme = extendTheme({
   colors: {
@@ -11,9 +12,10 @@ const LightTheme = extendTheme({
     textSecondary: '#888888'
   },
   components: {
-    Card: cardStyle,
+    Card: CardStyle,
     Accordion: DropdownStyle,
     Button: ButtonStyle,
+    Drawer: DrawerStyle,
   },
 })
 

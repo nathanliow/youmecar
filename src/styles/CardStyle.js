@@ -5,7 +5,7 @@ const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(cardAnatomy.keys);
 
 const variants = {
-    Card: definePartsStyle((props) => {
+    Card: definePartsStyle(() => {
         const theme = useTheme();
         const secondaryColor = theme.colors.secondary; 
 
@@ -22,4 +22,4 @@ const variants = {
     }),
 };
 
-export const cardStyle = defineMultiStyleConfig({ variants });
+export const CardStyle = defineMultiStyleConfig({ variants });

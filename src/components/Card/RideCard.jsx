@@ -46,11 +46,12 @@ function RideCard({ driver, time, numRiders, maxRiders, riders }) {
             onClick={handleClick}
             cursor="pointer"
             minH='107px'
+            marginBottom='20px'
         >
             <Image
                 objectFit='cover'
                 maxW='30%'
-                src="cars/dark_sedan.png"
+                src="cars/dark_suv.png"
                 alt='Car Image'
             />
 

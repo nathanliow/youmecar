@@ -1,59 +1,58 @@
 import { defineStyle, defineStyleConfig } from '@chakra-ui/react';
-import { theme } from '@chakra-ui/react';
+import { useTheme } from '@chakra-ui/react';
 
-const menu = defineStyle({
-  color: "black",
-  background: "white", 
-  _hover: {
-    background: "#E8E8E8",
-  },
-
-  _dark: {
-    color: "white",
-    background: "black", 
-  }
+const back = defineStyle(() => {
+    const theme = useTheme();
+    const primary = theme.colors.primary;
+    const textPrimary = theme.colors.textPrimary;
+    const textSecondary = theme.colors.textSecondary;
+    
+    return {
+        fontSize: "30px",
+        color: textPrimary,
+        background: primary,
+        _hover: {
+        background: textSecondary,
+        },
+    };
 });
 
-const back = defineStyle({
-  fontSize: "30px",
-  color: "black",
-  background: "white", 
-  _hover: {
-    background: "#E8E8E8",
-  },
-
-  _dark: {
-    color: "white",
-    background: "black", 
-  }
+const darkMode = defineStyle(() => {
+    const theme = useTheme();
+    const primary = theme.colors.primary;
+    const textPrimary = theme.colors.textPrimary;
+    const textSecondary = theme.colors.textSecondary;
+    
+    return {
+        fontSize: "30px",
+        color: textPrimary,
+        background: primary,
+        _hover: {
+        background: textSecondary,
+        },
+    };
 });
 
-const darkMode = defineStyle({
-  fontSize: "30px",
-  color: "black",
-  background: "white", 
-  _hover: {
-    background: "#E8E8E8",
-  },
-
-  _dark: {
-    color: "white",
-    background: "black", 
-  }
+const logOut = defineStyle(() => {
+    const theme = useTheme();
+    const primary = theme.colors.primary;
+    const textPrimary = theme.colors.textPrimary;
+    const textSecondary = theme.colors.textSecondary;
+    
+    return {
+        fontSize: "30px",
+        color: textPrimary,
+        background: primary,
+        _hover: {
+            background: textSecondary,
+        },
+    };
 });
 
-const logOut = defineStyle({
-  fontSize: "30px",
-  color: "black",
-  background: "white", 
-  _hover: {
-    background: "#E8E8E8",
-  },
-
-  _dark: {
-    color: "white",
-    background: "black", 
-  }
+export const ButtonStyle = defineStyleConfig({ 
+    variants: { 
+        back, 
+        darkMode, 
+        logOut,
+    }
 });
-
-export const ButtonStyle = defineStyleConfig({ variants: { menu, back, darkMode, logOut } });

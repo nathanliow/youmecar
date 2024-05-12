@@ -23,7 +23,7 @@ function ProfileDrawer({ isOpen, onClose }) {
   };
 
   return (
-    <Drawer isOpen={isOpen} placement='right' onClose={onClose}>
+    <Drawer variant='Profile' isOpen={isOpen} placement='right' onClose={onClose}>
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton />

@@ -32,6 +32,7 @@ function OrgCard({ name, numMembers }) {
             alignItems="center"
             justifyContent="space-between"
             px='20px'
+            marginBottom='20px'
         >
             <Image
                 objectFit='cover'

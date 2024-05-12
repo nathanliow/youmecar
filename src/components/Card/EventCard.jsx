@@ -33,6 +33,7 @@ function EventCard({ name, location, time, numGoing }) {
             alignItems="center"
             justifyContent="space-between"
             px='20px'
+            marginBottom='20px'
         >
             <Image
                 objectFit='cover'

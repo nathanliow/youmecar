@@ -5,7 +5,7 @@ const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(accordionAnatomy.keys)
 
 const variants = {
-    LocationDropdown: definePartsStyle((props) => {
+    LocationDropdown: definePartsStyle(() => {
         const theme = useTheme();
         const textPrimaryColor = theme.colors.textPrimary; 
         const textSecondaryColor = theme.colors.textSecondary; 
