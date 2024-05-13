@@ -5,6 +5,7 @@ User:
  - events driven
  - events organized
  - most common ride partners
+ - Active orgs (they are a part of)
 
 Rider:
  - user.name
@@ -28,7 +29,9 @@ Event:
  - numGoing
 
  Organization:
+ - code (for joining)
  - name
- - admins
- - Events[]
+ - admins[]
+ - Events collection
  - numMembers
+ - Members[]

@@ -1,4 +1,5 @@
 import { 
+  useTheme,
   Drawer, 
   DrawerHeader,
   DrawerBody, 
@@ -15,19 +16,23 @@ import { IoMdPerson, IoMdSettings, IoMdMoon, IoIosLogOut } from "react-icons/io"
 import { handleSignOut } from '../../Firebase';
 
 function ProfileDrawer({ isOpen, onClose, toggleDarkMode }) {
-    const { toggleColorMode } = useColorMode()
+    const { colorMode, toggleColorMode } = useColorMode()
+    const theme = useTheme();
+    const overlayColor = colorMode === "light" ? theme.colors.overlay.light : theme.colors.overlay.dark;
 
-  const handleProfileClick = () => {
-    console.log("Profile Page clicked!");
-  };
+    const handleProfileClick = () => {
+        console.log("Profile Page clicked!");
+    };
 
-  const handleSettingsClick = () => {
-      console.log("Settings clicked!");
-  };
+    const handleSettingsClick = () => {
+        console.log("Settings clicked!");
+    };
 
   return (
     <Drawer variant='Profile' isOpen={isOpen} placement='right' onClose={onClose}>
-      <DrawerOverlay />
+      <DrawerOverlay 
+        bg={overlayColor}
+      />
       <DrawerContent>
         <DrawerCloseButton />
         <DrawerHeader></DrawerHeader>

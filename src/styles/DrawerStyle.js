@@ -8,11 +8,11 @@ const variants = {
     Profile: definePartsStyle(() => {
         const theme = useTheme();
         const { colorMode } = useColorMode();
-        const secondary = colorMode === "light" ? theme.colors.secondary.light : theme.colors.secondary.dark;
+        const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
 
         return {
             dialog: {
-                bg: secondary,
+                bg: primary,
             },
         };
     }),

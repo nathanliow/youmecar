@@ -25,7 +25,11 @@ const theme = {
         textSecondary: {
             light: '#888888',
             dark: '#888888',
-        }
+        },
+        overlay: {
+            light: 'blackAlpha.600',
+            dark: 'blackAlpha.800',
+        },
     },
     components: {
         Card: CardStyle,

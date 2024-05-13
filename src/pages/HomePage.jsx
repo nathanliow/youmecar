@@ -1,33 +1,56 @@
-import React from 'react'
-import { useTheme, useColorMode } from '@chakra-ui/react'
+import React, { useState, useEffect } from 'react'
+import { 
+    useTheme, 
+    useColorMode, 
+    Button,
+    useDisclosure,
+} from '@chakra-ui/react'
 import HomeNavbar from '.././components/Navbar/HomeNavbar.jsx'
 import OrgCard from '../components/Card/OrgCard.jsx';
 import SearchBar from '../components/SearchBar.jsx';
+import OrgJoinModal from '../components/Modal/OrgJoinModal.jsx';
+import OrgCreateModal from '../components/Modal/OrgCreateModal.jsx';
+import { getActiveOrgs } from '.././Firebase';
 
 function HomePage() {
   const theme = useTheme();
   const { colorMode } = useColorMode();
-  const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
+  const [activeOrgs, setActiveOrgs] = useState([]);
+
+  const { isOpen: isJoinModalOpen, onOpen: onJoinModalOpen, onClose: onJoinModalClose } = useDisclosure();
+  const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onClose: onCreateModalClose } = useDisclosure();
+
+  useEffect(() => {
+    async function fetchActiveOrgs() {
+      try {
+        const orgDocs = await getActiveOrgs();
+
+        setActiveOrgs(orgDocs.map(doc => doc.data()));
+      } catch (error) {
+        console.error('Error fetching active organizations:', error);
+      }
+    }
+    fetchActiveOrgs();
+  }, []);
 
   return (
-    <div>
-        <HomeNavbar/>
-        <SearchBar/>
-        <div style={{ maxHeight: '80vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                <OrgCard name="Acts College Fellowship" numMembers="473"/>
-                
+    <>
+        <div>
+            <HomeNavbar/>
+            <SearchBar/>
+            <div style={{ maxHeight: '70vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
+                {activeOrgs.map(org => (
+                    org && <OrgCard key={org.id} name={org.Name} numMembers={org.numMembers} />
+                ))}
+            </div>
+            <div style={{ marginTop: '3vh', display: 'flex', justifyContent: 'space-evenly' }}>
+                <Button variant="normal" onClick={onCreateModalOpen}>Create Organization</Button>
+                <Button variant="normal" onClick={onJoinModalOpen}>Join Organization</Button>
+            </div>
         </div>
-    </div>
+        <OrgCreateModal isOpen={isCreateModalOpen} onOpen={onCreateModalOpen} onClose={onCreateModalClose} />
+        <OrgJoinModal isOpen={isJoinModalOpen} onOpen={onJoinModalOpen} onClose={onJoinModalClose} />
+    </>
   );
 }
 
