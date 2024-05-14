@@ -12,34 +12,43 @@ import OrgJoinModal from '../components/Modal/OrgJoinModal.jsx';
 import OrgCreateModal from '../components/Modal/OrgCreateModal.jsx';
 import { getActiveOrgs } from '.././Firebase';
 
+
 function HomePage() {
-  const theme = useTheme();
-  const { colorMode } = useColorMode();
-  const [activeOrgs, setActiveOrgs] = useState([]);
+    const theme = useTheme();
+    const { colorMode } = useColorMode();
+    const [activeOrgs, setActiveOrgs] = useState([]);
+    const [filteredOrgs, setFilteredOrgs] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
-  const { isOpen: isJoinModalOpen, onOpen: onJoinModalOpen, onClose: onJoinModalClose } = useDisclosure();
-  const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onClose: onCreateModalClose } = useDisclosure();
+    const { isOpen: isJoinModalOpen, onOpen: onJoinModalOpen, onClose: onJoinModalClose } = useDisclosure();
+    const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onClose: onCreateModalClose } = useDisclosure();
 
-  useEffect(() => {
-    async function fetchActiveOrgs() {
-      try {
-        const orgDocs = await getActiveOrgs();
+    useEffect(() => {
+        async function fetchActiveOrgs() {
+        try {
+            const orgDocs = await getActiveOrgs();
 
-        setActiveOrgs(orgDocs.map(doc => doc.data()));
-      } catch (error) {
-        console.error('Error fetching active organizations:', error);
-      }
-    }
-    fetchActiveOrgs();
-  }, []);
+            setActiveOrgs(orgDocs.map(doc => doc.data()));
+        } catch (error) {
+            console.error('Error fetching active organizations:', error);
+        }
+        }
+        fetchActiveOrgs();
+    }, []);
+  
+
+    useEffect(() => {
+        setFilteredOrgs(activeOrgs.filter(org => org.Name.toLowerCase().includes(searchQuery.toLowerCase())));
+    }, [activeOrgs, searchQuery]);
+  
 
   return (
     <>
         <div>
             <HomeNavbar/>
-            <SearchBar/>
+            <SearchBar onSearch={setSearchQuery}/>
             <div style={{ maxHeight: '70vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
-                {activeOrgs.map(org => (
+                {filteredOrgs.map(org => (
                     org && <OrgCard key={org.id} name={org.Name} numMembers={org.numMembers} />
                 ))}
             </div>
@@ -48,7 +57,7 @@ function HomePage() {
                 <Button variant="normal" onClick={onJoinModalOpen}>Join Organization</Button>
             </div>
         </div>
-        <OrgCreateModal isOpen={isCreateModalOpen} onOpen={onCreateModalOpen} onClose={onCreateModalClose} />
+        <OrgCreateModal isOpen={isCreateModalOpen} onOpen={onCreateModalOpen} onClose={onCreateModalClose} setActiveOrgs={setActiveOrgs} />
         <OrgJoinModal isOpen={isJoinModalOpen} onOpen={onJoinModalOpen} onClose={onJoinModalClose} />
     </>
   );

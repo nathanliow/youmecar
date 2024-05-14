@@ -1,15 +1,18 @@
-import React from 'react';
-import { useTheme, IconButton, useDisclosure, useColorMode } from '@chakra-ui/react'
+import React, { useState, useEffect } from 'react';
+import { useTheme, IconButton, useDisclosure, useColorMode, Avatar } from '@chakra-ui/react'
 import { FaCarAlt } from "react-icons/fa";
-import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 import ProfileDrawer from '../Drawer/ProfileDrawer';
+import { getActiveUserInfo } from '../../Firebase';
+
 
 function HomeNavbar() {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
+    const secondary = colorMode === "light" ? theme.colors.secondary.light : theme.colors.secondary.dark;
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark; 
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [userInfo, setUserInfo] = useState(null);
 
     const handleEasterEgg = () => {
         console.log("Easter Egg clicked!");
@@ -19,6 +22,19 @@ function HomeNavbar() {
         onOpen();
         console.log("Profile clicked!");
     };
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const userInfoData = await getActiveUserInfo();
+                setUserInfo(userInfoData);
+            } catch (error) {
+                console.error('Error retrieving active user info:', error);
+            }
+        };
+
+        fetchUserInfo();
+    }, []); 
 
     return (
       <>
@@ -36,11 +52,9 @@ function HomeNavbar() {
                     <div>CAR</div>
                 </div>
             </div>
-            <button onClick={handleProfileClick} style={{ border: 'none', backgroundColor: 'transparent', marginRight: '10px' }}>
-                <ProfileIcon1 onClick={handleProfileClick} width="40px" height="40px" style={{ fill: 'white' }} />
-            </button>
+            <Avatar name={userInfo && userInfo.displayName} size='md' src={userInfo && userInfo.pfp} bg={secondary} onClick={handleProfileClick} style={{ cursor: 'pointer' }}/>
         </div>
-        <ProfileDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
+        <ProfileDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose} userInfo={userInfo}/>
       </>
     )
 }

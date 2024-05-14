@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, query, where, getDocs, doc, setDoc, arrayUnion, updateDoc, addDoc, increment, getDoc } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, doc, setDoc, arrayUnion, updateDoc, addDoc, increment, getDoc, onSnapshot } from "firebase/firestore";
 import { firebaseConfig } from "./FirebaseConfig";
     
 // Initialize Firebase
@@ -31,6 +31,7 @@ onAuthStateChanged(auth, async (user) => {
                 EventsOrganized: 0,
                 RidePartners: [],
                 ActiveOrgs: [],
+                Friends: [],
             });
         }
         localStorage.setItem('currentUser', JSON.stringify(user));
@@ -111,12 +112,11 @@ const checkIfOrgAlreadyJoined = async (orgCode) => {
 };
 
 // handles a user creating an organization
-const handleCreateOrg = async (orgName, orgCode) => {
+const handleCreateOrg = async (orgName, orgCode, setActiveOrgs) => {
     try {
         // Checks firestore to see if organization already exists
         const querySnapshotCode = await checkIfOrgExists(orgCode)
-        const querySnapshotName = await getDocs(query(collection(firestore, "organizations"), where("Name", "==", orgName)));
-        const orgExists = (!querySnapshotCode.empty) || (!querySnapshotName.empty);
+        const orgExists = (!querySnapshotCode.empty);
         
       if (!orgExists) {
         const user = auth.currentUser;
@@ -132,11 +132,16 @@ const handleCreateOrg = async (orgName, orgCode) => {
         await updateDoc(doc(firestore, "users", user.uid), {
             ActiveOrgs: arrayUnion(newOrgRef),
         });
+
+        // update home page when an org is created
+        const updatedOrgsSnapshot = await getActiveOrgs();
+        const updatedOrgs = updatedOrgsSnapshot.map(doc => doc.data());
+        setActiveOrgs(updatedOrgs);
   
         console.log(`'${orgName}' with code '${orgCode}' created successfully!`);
         return true; // Organization joined successfully
       } else {
-        console.log(`Organization with code '${orgCode}' or name '${orgName}' already exists.`);
+        console.log(`Organization with code '${orgCode}' already exists.`);
         return false; // Organization already exists
       }
     } catch (error) {
@@ -164,10 +169,8 @@ const handleJoinOrg = async (orgCode) => {
             numMembers: increment(1),
         });
   
-        console.log(`Organization with code '${orgCode}' joined successfully!`);
         return true; // Organization joined successfully
       } else {
-        console.log(`Organization with code '${orgCode}' does not exist.`);
         return false; // Organization does not exist
       }
     } catch (error) {
@@ -182,21 +185,73 @@ const getActiveOrgs = async () => {
         const user = JSON.parse(localStorage.getItem('currentUser'));
         // Get the user document
         const userDoc = await getDoc(doc(firestore, "users", user.uid));
-    
         // Get the user's ActiveOrgs array
         const activeOrgs = userDoc.data().ActiveOrgs;
-    
+        
         // Get the organization documents for each organization reference in the ActiveOrgs array
         const organizationDocs = await Promise.all(
             activeOrgs.map((orgRef) => getDoc(orgRef))
         );
-    
+
         // Return the organization documents
         return organizationDocs;
     } catch (error) {
         console.error('Error retrieving active organizations:', error);
     }
   };
+
+// gets all the user information for Profile Drawer
+const getActiveUserInfo = async () => {
+    try {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        // Get the user document
+        const userDoc = await getDoc(doc(firestore, "users", user.uid));
+    
+        const displayName = user.displayName;
+        const email = user.email;
+        const pfp = user.photoURL;
+        const numFriends = userDoc.data().Friends.length;
+    
+        // Return user information including the number of friends
+        return { displayName, email, pfp, numFriends };
+    } catch (error) {
+        console.error('Error retrieving active user info:', error);
+        throw error; // Rethrow the error to handle it elsewhere if needed
+    }
+};
+
+// Function to fetch the first three members and their profile pictures from an organization
+const getOrganizationMembers = async (orgId) => {
+    try {
+        // Query the organization document
+        // const orgRef = firestore.collection('organizations').doc(orgId);
+        const orgDoc = await getDoc(doc(firestore, "organizations", orgId));
+
+        // Check if the organization exists
+        if (!orgDoc.exists) {
+            throw new Error('Organization not found');
+        }
+
+        // Get the members and admins arrays from the organization document
+        const members = orgDoc.data().Members || [];
+        const admins = orgDoc.data().Admins || [];
+
+        // Combine members and admins arrays
+        const combinedArray = [...members, ...admins];
+
+        // Shuffle the combined array
+        const shuffledArray = combinedArray.sort(() => 0.5 - Math.random());
+
+        // Get the first three elements from the shuffled array
+        const firstThreeMembers = shuffledArray.slice(0, 3);
+
+        // Return the first three members
+        return firstThreeMembers;
+    } catch (error) {
+        console.error('Error fetching organization members:', error);
+        throw error; // Throw error for handling in the component
+    }
+};
 
 export { 
     app,
@@ -206,4 +261,6 @@ export {
     handleCreateOrg,
     checkIfOrgAlreadyJoined,
     getActiveOrgs,
+    getActiveUserInfo,
+    getOrganizationMembers
 };

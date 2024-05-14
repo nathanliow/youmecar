@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     Card, 
     CardHeader, 
@@ -8,20 +8,42 @@ import {
     Text,
     useTheme,
     useColorMode,
+    Avatar,
 } from '@chakra-ui/react'
 import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 import { ChevronRightIcon } from '@chakra-ui/icons'
+import { getOrganizationMembers } from '../../Firebase';
 
-function OrgCard({ name, numMembers }) {
+function OrgCard({ key, name, numMembers }) {
     const theme = useTheme();
     const { colorMode } = useColorMode();
+    const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
     const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
+    const [memberAvatars, setMemberAvatars] = useState([]);
 
     const handleClick = () => {
         // Handle click action here
         console.log("Card clicked!");
     };
+
+    useEffect(() => {
+        const fetchMembers = async () => {
+            try {
+                const orgId = key;
+                const members = await getOrganizationMembers(orgId);
+                console.log(members)
+
+                // Set the member avatars in state
+                setMemberAvatars(members);
+            } catch (error) {
+                // Handle error
+                console.error('Error fetching organization members:', error);
+            }
+        };
+
+        fetchMembers();
+    }, []);
 
     return (
         <Card
@@ -45,7 +67,7 @@ function OrgCard({ name, numMembers }) {
                 borderRadius='20px'
             />
 
-                <Stack gap='0px'>
+                <Stack gap='0px' width='full'>
                     <CardHeader 
                         pt='10px' 
                         pb='5px' 
@@ -70,11 +92,11 @@ function OrgCard({ name, numMembers }) {
                         >
                             <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
                                 <div style={{ display: 'flex', flexDirection: 'row', position: 'relative', zIndex: '1' }}> 
-                                    <ProfileIcon1 width='20px' height='20px' style={{ marginLeft: '-5px' }} />
-                                    <ProfileIcon1 width='20px' height='20px' style={{ marginLeft: '-5px' }} />
-                                    <ProfileIcon1 width='20px' height='20px' style={{ marginLeft: '-5px' }} />
+                                    {memberAvatars.map((avatarpfp, index) => (
+                                        <Avatar key={index} name="Joe Mama" size='xs' src={avatarpfp} bg={primary} style={{ marginLeft: '-5px' }}/>
+                                    ))}
                                 </div>
-                                <div>
+                            <div>
                                     <span style={{ fontWeight: 'bold' }}>{numMembers}</span> Members
                                 </div>
                             </div>

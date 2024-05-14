@@ -16,46 +16,78 @@ import {
     ModalCloseButton,
     Center,
     Text,
+    useToast,
 } from '@chakra-ui/react'
 import { checkIfOrgAlreadyJoined, handleJoinOrg } from '../.././Firebase'
 
 function OrgJoinModal({ isOpen, onClose }) {
-  const theme = useTheme();
-  const { colorMode } = useColorMode();
-  const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
-  const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
-  const overlayColor = colorMode === "light" ? theme.colors.overlay.light : theme.colors.overlay.dark;
-  const [orgCode, setOrgCode] = useState('');
-  const [isInvalid, setIsInvalid] = useState(false);
-  const [showAlreadyInError, setShowAlreadyInError] = useState(false);
-  const [showNoOrgError, setShowNoOrgError] = useState(false);
+    const theme = useTheme();
+    const { colorMode } = useColorMode();
+    const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
+    const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
+    const overlayColor = colorMode === "light" ? theme.colors.overlay.light : theme.colors.overlay.dark;
+    const [orgCode, setOrgCode] = useState('');
+    const [isInvalid, setIsInvalid] = useState(false);
+    const toast = useToast();
 
-  const resetStates = async () => {
-    setShowNoOrgError(false);
-    setShowAlreadyInError(false);
-  }
+    const resetState = async () => {
+        setIsInvalid(false);
+    }
 
   const joinOrg = async () => {
     try {
+        const loadingToast = toast({
+			title: 'Joining organization',
+			description: 'Please wait...',
+			status: 'info',
+			duration: null, 
+			isClosable: false,
+		});
+      
         if (orgCode.length === 6) {
+
             const alrJoined = await checkIfOrgAlreadyJoined(orgCode);
-            console.log(alrJoined)
             if (!alrJoined) {
                 const joined = await handleJoinOrg(orgCode);
                 if (joined) {
+                    toast.close(loadingToast);
+                    toast({
+                        title: 'Organization joined',
+                        description: `Organization joined successfully!`,
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true,
+                    });
                     onClose();
-                    setShowNoOrgError(false);
-                    setShowAlreadyInError(false);
                 } else {
-                    setShowNoOrgError(true);
-                    setShowAlreadyInError(false);
+                    toast.close(loadingToast);
+                    toast({
+                        title: 'Organization join failed',
+                        description: `Organization with code '${orgCode}' doesn't exist.`,
+                        status: 'error',
+                        duration: 5000,
+                        isClosable: true,
+                    });
                 }
             } else {
-                // already joined
-                setShowAlreadyInError(true);
-                setShowNoOrgError(false);
+                toast.close(loadingToast);
+                toast({
+                    title: 'Organization join failed',
+                    description: `You are already in organization with code '${orgCode}'.`,
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
             }
         } else {
+            toast.close(loadingToast);
+            toast({
+                title: 'Invalid code',
+                description: `All fields must be filled.`,
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
             setIsInvalid(true); 
         }
     } catch (error) {
@@ -79,7 +111,7 @@ function OrgJoinModal({ isOpen, onClose }) {
             background={primary}
         >
           <ModalHeader color={textPrimary}>Enter Organization Code</ModalHeader>
-          <ModalCloseButton color={textPrimary} onClick={resetStates}/>
+          <ModalCloseButton color={textPrimary} onClick={resetState}/>
           <ModalBody>
             <Center>
                 <VStack>
@@ -93,16 +125,6 @@ function OrgJoinModal({ isOpen, onClose }) {
                             <PinInputField/>
                         </PinInput>
                     </HStack>
-                    {showAlreadyInError && (
-                        <Text color='red' whiteSpace="pre-line">
-                            {"You are already in this organization!"}
-                        </Text>
-                    )}
-                    {showNoOrgError && (
-                        <Text color='red' whiteSpace="pre-line">
-                            {"The code is invalid!"}
-                        </Text>
-                    )}
                 </VStack>
             </Center>
           </ModalBody>
