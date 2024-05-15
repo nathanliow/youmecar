@@ -3,6 +3,7 @@ import { GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult, onA
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, query, where, getDocs, doc, setDoc, arrayUnion, updateDoc, addDoc, increment, getDoc, onSnapshot } from "firebase/firestore";
 import { firebaseConfig } from "./FirebaseConfig";
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
     
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -112,7 +113,7 @@ const checkIfOrgAlreadyJoined = async (orgCode) => {
 };
 
 // handles a user creating an organization
-const handleCreateOrg = async (orgName, orgCode, setActiveOrgs) => {
+const handleCreateOrg = async (orgImage, orgName, orgCode, setActiveOrgs) => {
     try {
         // Checks firestore to see if organization already exists
         const querySnapshotCode = await checkIfOrgExists(orgCode)
@@ -122,13 +123,26 @@ const handleCreateOrg = async (orgName, orgCode, setActiveOrgs) => {
         const user = auth.currentUser;
         // Create a new organization
         const newOrgRef = doc(collection(firestore, "organizations"));
-        await setDoc(newOrgRef, {
-            Name: orgName,
-            Code: orgCode,
-            numMembers: 1,
-            Admins: [user.uid],
-            Members: [],
-        });
+        if (orgImage) {
+            const downloadURL = await uploadImage(orgImage, orgName);
+            await setDoc(newOrgRef, {
+                Image: downloadURL,
+                Name: orgName,
+                Code: orgCode,
+                numMembers: 1,
+                Admins: [user.uid],
+                Members: [],
+            });
+        } else {
+            await setDoc(newOrgRef, {
+                Image: "default",
+                Name: orgName,
+                Code: orgCode,
+                numMembers: 1,
+                Admins: [user.uid],
+                Members: [],
+            });
+        }
         await updateDoc(doc(firestore, "users", user.uid), {
             ActiveOrgs: arrayUnion(newOrgRef),
         });
@@ -138,15 +152,11 @@ const handleCreateOrg = async (orgName, orgCode, setActiveOrgs) => {
         const updatedOrgs = updatedOrgsSnapshot.map(doc => doc.data());
         setActiveOrgs(updatedOrgs);
   
-        console.log(`'${orgName}' with code '${orgCode}' created successfully!`);
         return true; // Organization joined successfully
       } else {
-        console.log(`Organization with code '${orgCode}' already exists.`);
         return false; // Organization already exists
       }
     } catch (error) {
-      console.error('Error joining organization:', error);
-      throw error; // Throw error
     }
 };
 
@@ -220,38 +230,17 @@ const getActiveUserInfo = async () => {
     }
 };
 
-// Function to fetch the first three members and their profile pictures from an organization
-const getOrganizationMembers = async (orgId) => {
-    try {
-        // Query the organization document
-        // const orgRef = firestore.collection('organizations').doc(orgId);
-        const orgDoc = await getDoc(doc(firestore, "organizations", orgId));
-
-        // Check if the organization exists
-        if (!orgDoc.exists) {
-            throw new Error('Organization not found');
-        }
-
-        // Get the members and admins arrays from the organization document
-        const members = orgDoc.data().Members || [];
-        const admins = orgDoc.data().Admins || [];
-
-        // Combine members and admins arrays
-        const combinedArray = [...members, ...admins];
-
-        // Shuffle the combined array
-        const shuffledArray = combinedArray.sort(() => 0.5 - Math.random());
-
-        // Get the first three elements from the shuffled array
-        const firstThreeMembers = shuffledArray.slice(0, 3);
-
-        // Return the first three members
-        return firstThreeMembers;
-    } catch (error) {
-        console.error('Error fetching organization members:', error);
-        throw error; // Throw error for handling in the component
-    }
-};
+// uploads an image into firebase storage and returns the download URL to the image (for organization images)
+const uploadImage = async (image, name) => {
+    const storage = getStorage();
+    const storageRef = ref(storage, `images/${name}/${image.name}`);
+  
+    await uploadBytes(storageRef, image);
+  
+    const downloadURL = await getDownloadURL(storageRef);
+  
+    return downloadURL;
+  };
 
 export { 
     app,
@@ -262,5 +251,4 @@ export {
     checkIfOrgAlreadyJoined,
     getActiveOrgs,
     getActiveUserInfo,
-    getOrganizationMembers
 };

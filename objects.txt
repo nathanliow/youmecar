@@ -1,4 +1,5 @@
 User:
+ - pfp
  - name
  - username
  - events attended
@@ -35,3 +36,4 @@ Event:
  - Events collection
  - numMembers
  - Members[]
+ - pfp

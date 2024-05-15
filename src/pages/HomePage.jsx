@@ -49,7 +49,7 @@ function HomePage() {
             <SearchBar onSearch={setSearchQuery}/>
             <div style={{ maxHeight: '70vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
                 {filteredOrgs.map(org => (
-                    org && <OrgCard key={org.id} name={org.Name} numMembers={org.numMembers} />
+                    org && <OrgCard key={org.id} orgImage={org.Image} name={org.Name} numMembers={org.numMembers} admins={org.Admins} members={org.Members} />
                 ))}
             </div>
             <div style={{ marginTop: '3vh', display: 'flex', justifyContent: 'space-evenly' }}>
