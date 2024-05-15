@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react'
 import { checkIfOrgAlreadyJoined, handleJoinOrg } from '../.././Firebase'
 
-function OrgJoinModal({ isOpen, onClose }) {
+function OrgJoinModal({ isOpen, onClose, setActiveOrgs }) {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
@@ -48,7 +48,7 @@ function OrgJoinModal({ isOpen, onClose }) {
 
             const alrJoined = await checkIfOrgAlreadyJoined(orgCode);
             if (!alrJoined) {
-                const joined = await handleJoinOrg(orgCode);
+                const joined = await handleJoinOrg(orgCode, setActiveOrgs);
                 if (joined) {
                     toast.close(loadingToast);
                     toast({

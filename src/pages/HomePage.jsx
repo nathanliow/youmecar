@@ -44,21 +44,19 @@ function HomePage() {
 
   return (
     <>
-        <div>
-            <HomeNavbar/>
-            <SearchBar onSearch={setSearchQuery}/>
-            <div style={{ maxHeight: '70vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
-                {filteredOrgs.map(org => (
-                    org && <OrgCard key={org.id} orgImage={org.Image} name={org.Name} numMembers={org.numMembers} admins={org.Admins} members={org.Members} />
-                ))}
-            </div>
-            <div style={{ marginTop: '3vh', display: 'flex', justifyContent: 'space-evenly' }}>
-                <Button variant="normal" onClick={onCreateModalOpen}>Create Organization</Button>
-                <Button variant="normal" onClick={onJoinModalOpen}>Join Organization</Button>
-            </div>
+        <HomeNavbar/>
+        <SearchBar onSearch={setSearchQuery}/>
+        <div style={{ maxHeight: '70vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
+            {filteredOrgs.map((org, index) => (
+                org && <OrgCard key={index} orgImage={org.Image} name={org.Name} numMembers={org.numMembers} admins={org.Admins} members={org.Members} />
+            ))}
+        </div>
+        <div style={{ marginTop: '3vh', display: 'flex', justifyContent: 'space-evenly' }}>
+            <Button variant="normal" onClick={onCreateModalOpen}>Create Organization</Button>
+            <Button variant="normal" onClick={onJoinModalOpen}>Join Organization</Button>
         </div>
         <OrgCreateModal isOpen={isCreateModalOpen} onOpen={onCreateModalOpen} onClose={onCreateModalClose} setActiveOrgs={setActiveOrgs} />
-        <OrgJoinModal isOpen={isJoinModalOpen} onOpen={onJoinModalOpen} onClose={onJoinModalClose} />
+        <OrgJoinModal isOpen={isJoinModalOpen} onOpen={onJoinModalOpen} onClose={onJoinModalClose} setActiveOrgs={setActiveOrgs} />
     </>
   );
 }

@@ -67,6 +67,7 @@ const handleGoogleSignIn = async () => {
 const handleSignOut = () => {
     const user = auth.currentUser;
     if (user) {
+        localStorage.removeItem('currentUser');
         signOut(auth).then(() => {
             console.log("Sucessfully signed out")
         }).catch((error) => {
@@ -119,49 +120,51 @@ const handleCreateOrg = async (orgImage, orgName, orgCode, setActiveOrgs) => {
         const querySnapshotCode = await checkIfOrgExists(orgCode)
         const orgExists = (!querySnapshotCode.empty);
         
-      if (!orgExists) {
-        const user = auth.currentUser;
-        // Create a new organization
-        const newOrgRef = doc(collection(firestore, "organizations"));
-        if (orgImage) {
-            const downloadURL = await uploadImage(orgImage, orgName);
-            await setDoc(newOrgRef, {
-                Image: downloadURL,
-                Name: orgName,
-                Code: orgCode,
-                numMembers: 1,
-                Admins: [user.uid],
-                Members: [],
+        if (!orgExists) {
+            const user = auth.currentUser;
+            // Create a new organization
+            const newOrgRef = doc(collection(firestore, "organizations"));
+            const userRef = doc(firestore, "users", user.uid);
+            if (orgImage) {
+                const downloadURL = await uploadImage(orgImage, orgName);
+                await setDoc(newOrgRef, {
+                    Image: downloadURL,
+                    Name: orgName,
+                    Code: orgCode,
+                    numMembers: 1,
+                    Admins: [userRef],
+                    Members: [],
+                });
+            } else {
+                await setDoc(newOrgRef, {
+                    Image: "",
+                    Name: orgName,
+                    Code: orgCode,
+                    numMembers: 1,
+                    Admins: [userRef],
+                    Members: [],
+                });
+            }
+            await updateDoc(userRef, {
+                ActiveOrgs: arrayUnion(newOrgRef),
             });
-        } else {
-            await setDoc(newOrgRef, {
-                Image: "default",
-                Name: orgName,
-                Code: orgCode,
-                numMembers: 1,
-                Admins: [user.uid],
-                Members: [],
-            });
-        }
-        await updateDoc(doc(firestore, "users", user.uid), {
-            ActiveOrgs: arrayUnion(newOrgRef),
-        });
 
-        // update home page when an org is created
-        const updatedOrgsSnapshot = await getActiveOrgs();
-        const updatedOrgs = updatedOrgsSnapshot.map(doc => doc.data());
-        setActiveOrgs(updatedOrgs);
-  
-        return true; // Organization joined successfully
-      } else {
-        return false; // Organization already exists
-      }
+            // update home page when an org is created
+            const updatedOrgsSnapshot = await getActiveOrgs();
+            const updatedOrgs = updatedOrgsSnapshot.map(doc => doc.data());
+            setActiveOrgs(updatedOrgs);
+    
+            return true; // Organization joined successfully
+        } else {
+            return false; // Organization already exists
+        }
     } catch (error) {
+        console.error(error)
     }
 };
 
 // handles a user joining an organization with a code
-const handleJoinOrg = async (orgCode) => {
+const handleJoinOrg = async (orgCode, setActiveOrgs) => {
     try {
         // Checks firestore to see if organization already exists
         const querySnapshot = await checkIfOrgExists(orgCode)
@@ -171,13 +174,19 @@ const handleJoinOrg = async (orgCode) => {
         // Add organization to user's ActiveOrgs array
         const organizationDoc = querySnapshot.docs[0];
         const user = auth.currentUser;
-        await updateDoc(doc(firestore, "users", user.uid), {
+        const userRef = doc(firestore, "users", user.uid);
+        await updateDoc(userRef, {
             ActiveOrgs: arrayUnion(organizationDoc.ref),
         });
         await updateDoc(doc(firestore, "organizations", organizationDoc.id), {
-            Members: arrayUnion(user.uid),
+            Members: arrayUnion(userRef),
             numMembers: increment(1),
         });
+
+        // update home page when an org is created
+        const updatedOrgsSnapshot = await getActiveOrgs();
+        const updatedOrgs = updatedOrgsSnapshot.map(doc => doc.data());
+        setActiveOrgs(updatedOrgs);
   
         return true; // Organization joined successfully
       } else {
@@ -242,6 +251,24 @@ const uploadImage = async (image, name) => {
     return downloadURL;
   };
 
+async function getUsersInfo(references) {
+    try {
+        const users = [];
+        for (const reference of references) {
+            const docSnap = await getDoc(reference);
+            if (docSnap.exists()) {
+                users.push(docSnap.data());
+            } else {
+                console.log("Document does not exist:", reference.id);
+            }
+        }
+        return users;
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return [];
+    }
+}
+
 export { 
     app,
     handleGoogleSignIn,
@@ -251,4 +278,5 @@ export {
     checkIfOrgAlreadyJoined,
     getActiveOrgs,
     getActiveUserInfo,
+    getUsersInfo,
 };
