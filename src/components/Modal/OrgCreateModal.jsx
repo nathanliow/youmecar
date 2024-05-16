@@ -54,8 +54,8 @@ function OrgCreateModal({ isOpen, onClose, setActiveOrgs }) {
 			if (orgName && orgName.length > 0) {
 				// Check if the join code is valid
 				if (orgCode.match(alphanumericRegex) && orgCode.length === 6) {
-					const joined = await handleCreateOrg(orgImage, orgName, orgCode, setActiveOrgs);
-					if (joined) {
+					const created = await handleCreateOrg(orgImage, orgName, orgCode, setActiveOrgs);
+					if (created) {
 						toast.close(loadingToast);
 						toast({
 							title: 'Organization created',

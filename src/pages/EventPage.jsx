@@ -5,15 +5,14 @@ import {
     Button,
     useDisclosure,
 } from '@chakra-ui/react'
-import HomeNavbar from '.././components/Navbar/HomeNavbar.jsx'
+import EventNavbar from '.././components/Navbar/EventNavbar.jsx'
 import OrgCard from '../components/Card/OrgCard.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import OrgJoinModal from '../components/Modal/OrgJoinModal.jsx';
 import OrgCreateModal from '../components/Modal/OrgCreateModal.jsx';
 import { getActiveOrgs } from '.././Firebase';
 
-
-function HomePage() {
+function EventPage() {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const [activeOrgs, setActiveOrgs] = useState([]);
@@ -44,7 +43,7 @@ function HomePage() {
 
   return (
     <>
-        <HomeNavbar/>
+        <EventNavbar/>
         <SearchBar onSearch={setSearchQuery}/>
         <div style={{ maxHeight: '70vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
             {filteredOrgs.map((org, index) => (
@@ -61,4 +60,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default EventPage;

@@ -10,24 +10,23 @@ import {
     useColorMode,
     Avatar,
 } from '@chakra-ui/react'
-import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 import { ChevronRightIcon } from '@chakra-ui/icons'
 import { getUsersInfo } from '../../Firebase'
+import { useNavigate } from 'react-router-dom';
 
-function OrgCard({ orgImage, name, numMembers, admins, members }) {
+function OrgCard({ orgId, orgImage, name, numMembers, admins, members }) {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
     const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
     const [avatarUsers, setAvatarUsers] = useState([]);
+    const navigate = useNavigate();
 
     const handleClick = () => {
-        // Handle click action here
-        console.log("Card clicked!");
+        navigate(`/${orgId}`);
     };
 
-    // Fetch user data for admins and members
     useEffect(() => {
         const fetchUsers = async () => {
             const avatarMembers = admins.concat(members).slice(0, 3);
@@ -56,7 +55,7 @@ function OrgCard({ orgImage, name, numMembers, admins, members }) {
                 objectFit='cover'
                 maxW='30%'
                 src={orgImage}
-                alt='Event Image'
+                alt='Org Image'
                 borderRadius='20px'
                 fallbackSrc='/images/serena.png' 
             />

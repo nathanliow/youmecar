@@ -42,7 +42,7 @@ function HomeNavbar() {
             <IconButton
                 variant='back'
                 aria-label='Back Button'
-                icon={<FaCarAlt />}
+                icon={<FaCarAlt style={{ width: '100%', height: '100%' }}/>}
                 onClick={handleEasterEgg}
             />
             <div style={{ textAlign: 'center' }}>

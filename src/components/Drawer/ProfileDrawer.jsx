@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
   useTheme,
   Drawer, 
@@ -13,15 +13,16 @@ import {
   useColorMode,
   Avatar,
 } from '@chakra-ui/react'
-import { ReactComponent as ProfileIcon1 } from "../../public/profileIcons/profileIcon1.svg";
 import { IoMdPerson, IoMdSettings, IoMdMoon, IoIosLogOut } from "react-icons/io";
 import { handleSignOut } from '../../Firebase';
+import { useNavigate } from 'react-router-dom';
 
 function ProfileDrawer({ isOpen, onClose, userInfo }) {
     const { colorMode, toggleColorMode } = useColorMode()
     const theme = useTheme();
     const secondary = colorMode === "light" ? theme.colors.secondary.light : theme.colors.secondary.dark;
     const overlayColor = colorMode === "light" ? theme.colors.overlay.light : theme.colors.overlay.dark;
+    const navigate = useNavigate();
 
     const handleProfileClick = () => {
         console.log("Profile Page clicked!");
@@ -29,6 +30,11 @@ function ProfileDrawer({ isOpen, onClose, userInfo }) {
 
     const handleSettingsClick = () => {
         console.log("Settings clicked!");
+    };
+
+    const handleSignOutAndNavigate = () => {
+      handleSignOut(); // Call handleSignOut function
+      navigate('/'); // Navigate to the login page
     };
 
   return (
@@ -76,7 +82,7 @@ function ProfileDrawer({ isOpen, onClose, userInfo }) {
             variant='logOut'
             aria-label='Log Out'
             icon={<IoIosLogOut />}
-            onClick={handleSignOut}
+            onClick={handleSignOutAndNavigate}
           />
         </DrawerFooter>
       </DrawerContent>

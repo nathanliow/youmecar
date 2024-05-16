@@ -1,4 +1,4 @@
-// make sure to import this to right place
+// todo
 import React, { useState, useEffect } from 'react';
 import { useTheme, IconButton, useDisclosure, useColorMode, Avatar } from '@chakra-ui/react'
 import { ChevronLeftIcon } from '@chakra-ui/icons'
@@ -6,7 +6,7 @@ import ProfileDrawer from '../Drawer/ProfileDrawer';
 import { getActiveUserInfo } from '../../Firebase';
 import { useNavigate } from 'react-router-dom';
 
-function EventNavbar() {
+function OrgNavbar() {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
@@ -17,7 +17,7 @@ function EventNavbar() {
     const navigate = useNavigate();
 
     const handleBackClick = () => {
-        navigate('/home');
+        navigate('/home/orgs');
     };
 
     const handleProfileClick = () => {
@@ -60,4 +60,4 @@ function EventNavbar() {
     )
 }
 
-export default EventNavbar;
+export default OrgNavbar;

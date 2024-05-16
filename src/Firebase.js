@@ -125,26 +125,20 @@ const handleCreateOrg = async (orgImage, orgName, orgCode, setActiveOrgs) => {
             // Create a new organization
             const newOrgRef = doc(collection(firestore, "organizations"));
             const userRef = doc(firestore, "users", user.uid);
+            const downloadURL = ""
             if (orgImage) {
-                const downloadURL = await uploadImage(orgImage, orgName);
-                await setDoc(newOrgRef, {
-                    Image: downloadURL,
-                    Name: orgName,
-                    Code: orgCode,
-                    numMembers: 1,
-                    Admins: [userRef],
-                    Members: [],
-                });
-            } else {
-                await setDoc(newOrgRef, {
-                    Image: "",
-                    Name: orgName,
-                    Code: orgCode,
-                    numMembers: 1,
-                    Admins: [userRef],
-                    Members: [],
-                });
+                downloadURL = await uploadImage(orgImage, orgName);
             }
+            await setDoc(newOrgRef, {
+                id: newOrgRef.id,
+                Image: downloadURL,
+                Name: orgName,
+                Code: orgCode,
+                numMembers: 1,
+                Admins: [userRef],
+                Members: [],
+            });
+
             await updateDoc(userRef, {
                 ActiveOrgs: arrayUnion(newOrgRef),
             });
@@ -251,7 +245,8 @@ const uploadImage = async (image, name) => {
     return downloadURL;
   };
 
-async function getUsersInfo(references) {
+// get user info of a given array of user references
+const getUsersInfo = async (references) => {
     try {
         const users = [];
         for (const reference of references) {
@@ -269,6 +264,55 @@ async function getUsersInfo(references) {
     }
 }
 
+// creates an event of an org
+const handleCreateEvent = async (orgId, image, name, location, time, setEvents) => {
+    try {
+        const orgRef = doc(firestore, "organizations", orgId);
+        const eventsRef = doc(collection(orgRef, 'events'));
+
+        await setDoc(eventsRef, {
+            id: eventsRef.id,
+            Image: image || "",
+            Name: name,
+            Location: location,
+            Time: time,
+            numGoing: 0,
+            going: [],
+        });
+
+        // update home page when an org is created
+        const updatedEvents = await getEvents(orgId);
+        setEvents(updatedEvents);
+
+        return true;
+    } catch (error) {
+        console.error("Error creating event", error);
+        return false;
+    }
+}
+
+// get the events of an org
+const getEvents = async (orgId) => {
+    try {
+        // get event docs from organization subcollection
+        const orgRef = doc(firestore, "organizations", orgId);
+        const eventsSnapshot = await getDocs(query(collection(orgRef, 'events')));
+
+        // if empty, return empty early
+        if (eventsSnapshot.empty) {
+            return [];
+        }
+        
+        const events = eventsSnapshot.docs.map((doc) => {
+            return { id: doc.id, ...doc.data() };
+        });
+
+        return events;
+    } catch (error) {
+        console.error("Error fetching events:", error);
+    }
+}
+
 export { 
     app,
     handleGoogleSignIn,
@@ -279,4 +323,6 @@ export {
     getActiveOrgs,
     getActiveUserInfo,
     getUsersInfo,
+    handleCreateEvent,
+    getEvents,
 };

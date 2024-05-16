@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { useTheme, useColorMode } from '@chakra-ui/react'
 import { handleGoogleSignIn, handleSignOut } from './../Firebase'
 
@@ -10,10 +10,8 @@ function LoginPage() {
   const handleClick = async () => {
     try {
       await handleGoogleSignIn();
-      // Handle successful sign-in, such as redirecting to another page
     } catch (error) {
       console.error('Error signing in:', error);
-      // Handle sign-in error, such as displaying an error message
     }
   };
 
