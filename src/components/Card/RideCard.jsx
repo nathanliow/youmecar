@@ -18,7 +18,7 @@ import {
 import { IoMdPerson } from "react-icons/io";
 import RideDrawer from '../Drawer/RideDrawer'
 
-function RideCard({ driver, time, numRiders, maxRiders, riders }) {
+function RideCard({ rideImage, driver, time, numRiders, maxRiders, riders }) {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
@@ -50,7 +50,7 @@ function RideCard({ driver, time, numRiders, maxRiders, riders }) {
                 alt='Car Image'
             />
 
-            <Stack gap='0px' maxW='154px'>
+            <Stack gap='0px' maxWidth='154px'>
                 <CardHeader 
                     pt='10px' 
                     pb='5px' 

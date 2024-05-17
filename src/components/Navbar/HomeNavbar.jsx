@@ -46,8 +46,8 @@ function HomeNavbar() {
                 onClick={handleEasterEgg}
             />
             <div style={{ textAlign: 'center' }}>
-                <div style={{ display: 'grid', gridTemplateRows: 'repeat(3, 1fr)', color: textPrimary, fontWeight: 'bold' }}>
-                    <div>YOO</div>
+                <div style={{ display: 'grid', gridTemplateRows: 'repeat(3, 1fr)', color: textPrimary, fontWeight: 'bold', fontSize: '16px' }}>
+                    <div>YOU</div>
                     <div>MEE</div>
                     <div>CAR</div>
                 </div>

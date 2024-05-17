@@ -6,58 +6,59 @@ import {
     useDisclosure,
 } from '@chakra-ui/react'
 import EventNavbar from '.././components/Navbar/EventNavbar.jsx'
-import OrgCard from '../components/Card/OrgCard.jsx';
+import RideCard from '../components/Card/RideCard.jsx';
 import SearchBar from '../components/SearchBar.jsx';
-import OrgJoinModal from '../components/Modal/OrgJoinModal.jsx';
-import OrgCreateModal from '../components/Modal/OrgCreateModal.jsx';
-import { getActiveOrgs } from '.././Firebase';
+import EventCreateModal from '../components/Modal/EventCreateModal.jsx';
+import { getRides } from '.././Firebase';
+import { useParams } from 'react-router-dom';
 
-function EventPage() {
+function OrgPage() {
+    const { orgId, eventId } = useParams();
     const theme = useTheme();
     const { colorMode } = useColorMode();
-    const [activeOrgs, setActiveOrgs] = useState([]);
-    const [filteredOrgs, setFilteredOrgs] = useState([]);
+    const [rides, setRides] = useState([]);
+    const [filteredRides, setFilteredRides] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const { isOpen: isJoinModalOpen, onOpen: onJoinModalOpen, onClose: onJoinModalClose } = useDisclosure();
-    const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onClose: onCreateModalClose } = useDisclosure();
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     useEffect(() => {
-        async function fetchActiveOrgs() {
+        async function fetchRides() {
         try {
-            const orgDocs = await getActiveOrgs();
+            const orgEventsRides = await getRides(orgId, eventId);
 
-            setActiveOrgs(orgDocs.map(doc => doc.data()));
+            setRides(orgEventsRides);
         } catch (error) {
-            console.error('Error fetching active organizations:', error);
+            console.error('Error fetching rides', error);
         }
         }
-        fetchActiveOrgs();
-    }, []);
+        fetchRides();
+    }, [orgId]);
   
 
     useEffect(() => {
-        setFilteredOrgs(activeOrgs.filter(org => org.Name.toLowerCase().includes(searchQuery.toLowerCase())));
-    }, [activeOrgs, searchQuery]);
+        if (rides && rides.length > 0) {
+            setFilteredRides(rides.filter(ride => ride.Name.toLowerCase().includes(searchQuery.toLowerCase())));
+        }
+    }, [rides, searchQuery]);
   
 
   return (
     <>
-        <EventNavbar/>
+        <EventNavbar orgId={orgId} eventId={eventId}/>
         <SearchBar onSearch={setSearchQuery}/>
         <div style={{ maxHeight: '70vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
-            {filteredOrgs.map((org, index) => (
-                org && <OrgCard key={index} orgId={org.id} orgImage={org.Image} name={org.Name} numMembers={org.numMembers} admins={org.Admins} members={org.Members} />
-            ))}
+            {/* {filteredRides.map((ride, index) => (
+                ride && <RideCard key={index} driver={ride.Driver} time={ride.Time} numRiders={ride.numRiders} maxRiders={ride.maxRiders} riders={ride.Riders}/>
+            ))} */}
+            <RideCard driver="joe" time="2:00 PM" numRiders="4" maxRiders="5" riders={['ABC', 'DEF', 'GEE', 'EFE']}/>
         </div>
-        <div style={{ marginTop: '3vh', display: 'flex', justifyContent: 'space-evenly' }}>
-            <Button variant="normal" onClick={onCreateModalOpen}>Create Organization</Button>
-            <Button variant="normal" onClick={onJoinModalOpen}>Join Organization</Button>
-        </div>
-        <OrgCreateModal isOpen={isCreateModalOpen} onOpen={onCreateModalOpen} onClose={onCreateModalClose} setActiveOrgs={setActiveOrgs} />
-        <OrgJoinModal isOpen={isJoinModalOpen} onOpen={onJoinModalOpen} onClose={onJoinModalClose} setActiveOrgs={setActiveOrgs} />
+        {/* <div style={{ marginTop: '3vh', display: 'flex', justifyContent: 'space-evenly' }}>
+            <Button variant="normal" onClick={onOpen}>Create Event</Button>
+        </div> */}
+        {/* <EventCreateModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} orgId={orgId} setEvents={setEvents} /> */}
     </>
   );
 }
 
-export default EventPage;
+export default OrgPage;

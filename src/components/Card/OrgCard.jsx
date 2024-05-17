@@ -60,7 +60,7 @@ function OrgCard({ orgId, orgImage, name, numMembers, admins, members }) {
                 fallbackSrc='/images/serena.png' 
             />
 
-                <Stack gap='0px' width='full'>
+                <Stack gap='0px' width='full' maxWidth='208px'>
                     <CardHeader 
                         pt='10px' 
                         pb='5px' 

@@ -291,6 +291,31 @@ const handleCreateEvent = async (orgId, image, name, location, time, setEvents) 
     }
 }
 
+// get a user based on single ref
+const getUser = async (ref) => {
+    try {
+        // get event docs from organization subcollection
+        const userDoc = await getDoc(ref);
+
+        return userDoc;
+    } catch (error) {
+        console.error("Error fetching org:", error);
+    }
+}
+
+// get an org based on id
+const getOrg = async (orgId) => {
+    try {
+        // get event docs from organization subcollection
+        const orgRef = doc(firestore, "organizations", orgId);
+        const orgDoc = await getDoc(orgRef);
+
+        return orgDoc;
+    } catch (error) {
+        console.error("Error fetching org:", error);
+    }
+}
+
 // get the events of an org
 const getEvents = async (orgId) => {
     try {
@@ -313,6 +338,46 @@ const getEvents = async (orgId) => {
     }
 }
 
+// get the event of an org based on orgId and eventId
+const getEvent = async (orgId, eventId) => {
+    try {
+        // get event docs from organization subcollection
+        const orgRef = doc(firestore, "organizations", orgId);
+        const querySnapshot = await getDocs(query(collection(orgRef, 'events'), where("id", "==", eventId)));
+
+        if (!querySnapshot.empty) {
+            return querySnapshot.docs[0];
+        } else {
+            console.log("No event found with eventId:", eventId);
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching events:", error);
+    }
+}
+
+// get the rides of an org's event
+const getRides = async (orgId, eventId) => {
+    try {
+        // get event docs from organization subcollection
+        const orgRef = doc(firestore, "organizations", orgId);
+        const eventsSnapshot = await getDocs(query(collection(orgRef, 'events')));
+
+        // if empty, return empty early
+        if (eventsSnapshot.empty) {
+            return [];
+        }
+        
+        const events = eventsSnapshot.docs.map((doc) => {
+            return { id: doc.id, ...doc.data() };
+        });
+
+        return events;
+    } catch (error) {
+        console.error("Error fetching rides:", error);
+    }
+}
+
 export { 
     app,
     handleGoogleSignIn,
@@ -324,5 +389,9 @@ export {
     getActiveUserInfo,
     getUsersInfo,
     handleCreateEvent,
+    getUser,
+    getOrg,
+    getEvent,
     getEvents,
+    getRides,
 };

@@ -71,7 +71,7 @@ function EventCard({ orgId, eventId, eventImage, name, location, time, numGoing,
                 fallbackSrc='/images/serena.png' 
             />
 
-                <Stack gap='0px' width='full'>
+                <Stack gap='0px' width='full' maxWidth='208px'>
                     <CardHeader 
                         pt='10px' 
                         pb='5px' 

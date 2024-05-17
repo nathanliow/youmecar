@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage'
 import TestPage from './pages/TestPage'
 import HomePage from './pages/HomePage'
 import OrgPage from './pages/OrgPage'
+import EventPage from './pages/EventPage'
 
 export const Pages = () => {
     return (
@@ -13,6 +14,7 @@ export const Pages = () => {
                 <Route path="/home" element={<HomePage/>}/>
                 <Route path="/test" element={<TestPage/>}/>
                 <Route path="/:orgId" element={<OrgPage />} />
+                <Route path="/:orgId/:eventId" element={<EventPage />} />
                 {/* <Route element={<NotFoundPage/>}/> */}
             </Routes>
         </BrowserRouter>

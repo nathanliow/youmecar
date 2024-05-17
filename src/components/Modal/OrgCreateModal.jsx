@@ -161,7 +161,7 @@ function OrgCreateModal({ isOpen, onClose, setActiveOrgs }) {
 					<InputGroup>
 						<Input 
 							isInvalid={isCodeInvalid} 
-							placeholder='Join Code (Optional)'
+							placeholder='Join Code'
 							value={orgCode}
 							onChange={(e) => setOrgCode(e.target.value)}
 						/>
