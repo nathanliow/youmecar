@@ -299,7 +299,16 @@ const getUser = async (ref) => {
 
         return userDoc;
     } catch (error) {
-        console.error("Error fetching org:", error);
+        console.error("Error fetching user:", error);
+    }
+}
+
+// get a user ref given an id
+const getUserRef = (uid) => {
+    try {
+        return doc(firestore, "users", uid);
+    } catch (error) {
+        console.error("Error fetching user:", error);
     }
 }
 
@@ -378,8 +387,62 @@ const getRides = async (orgId, eventId) => {
     }
 }
 
+// updates org admins given the updated admins
+const updateOrgAdmins = async (orgId, updatedAdmins, updatedMembers) => {
+    const orgRef = doc(firestore, "organizations", orgId);
+    const adminRefs = updatedAdmins.map(admin => {
+        return typeof admin === 'string' ? doc(firestore, "users", admin) : admin;
+    });
+
+    await updateDoc(orgRef, {
+        Admins: adminRefs,
+        Members: updatedMembers
+    });
+};
+
+// removes a user from an org 
+const removeUserFromOrg = async (orgId, uid) => {
+    try {
+        // Fetch the organization document
+        const orgRef = doc(firestore, "organizations", orgId);
+        const orgDoc = await getDoc(orgRef);
+        const orgData = orgDoc.data();
+
+        // Fetch the user document
+        const userRef = doc(firestore, "users", uid);;
+        const userDoc = await getUser(userRef);
+        const userData = userDoc.data();
+
+        // Remove the user from the organization's Admins and Members arrays
+        const updatedAdmins = orgData.Admins.filter(adminRef => adminRef.id !== uid);
+        const updatedMembers = orgData.Members.filter(memberRef => memberRef.id !== uid);
+
+        // Update the organization's Admins and Members arrays
+        await updateDoc(orgRef, {
+            Admins: updatedAdmins,
+            Members: updatedMembers,
+            numMembers: increment(-1),
+        });
+
+        // Remove the organization from the user's ActiveOrgs array
+        const updatedActiveOrgs = userData.ActiveOrgs.filter(orgRef => orgRef.id !== orgId);
+
+        // Update the user's ActiveOrgs array
+        await updateDoc(userRef, {
+            ActiveOrgs: updatedActiveOrgs,
+        });
+        
+        console.log(`User ${uid} has been successfully removed from organization ${orgId}`);
+        return true;
+    } catch (error) {
+        console.error('Error removing user from organization:', error);
+        return false;
+    }
+};
+
 export { 
     app,
+    firestore,
     handleGoogleSignIn,
     handleSignOut,
     handleJoinOrg,
@@ -389,9 +452,12 @@ export {
     getActiveUserInfo,
     getUsersInfo,
     handleCreateEvent,
+    getUserRef,
     getUser,
     getOrg,
     getEvent,
     getEvents,
     getRides,
+    updateOrgAdmins,
+    removeUserFromOrg,
 };

@@ -8,19 +8,22 @@ import {
 import EventNavbar from '.././components/Navbar/EventNavbar.jsx'
 import RideCard from '../components/Card/RideCard.jsx';
 import SearchBar from '../components/SearchBar.jsx';
-import EventCreateModal from '../components/Modal/EventCreateModal.jsx';
 import { getRides } from '.././Firebase';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-function OrgPage() {
+function EventPage() {
     const { orgId, eventId } = useParams();
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const [rides, setRides] = useState([]);
     const [filteredRides, setFilteredRides] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate();
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const handleManageEvent = () => {
+        navigate(`/edit/${orgId}/${eventId}`);
+    };
 
     useEffect(() => {
         async function fetchRides() {
@@ -53,12 +56,11 @@ function OrgPage() {
             ))} */}
             <RideCard driver="joe" time="2:00 PM" numRiders="4" maxRiders="5" riders={['ABC', 'DEF', 'GEE', 'EFE']}/>
         </div>
-        {/* <div style={{ marginTop: '3vh', display: 'flex', justifyContent: 'space-evenly' }}>
-            <Button variant="normal" onClick={onOpen}>Create Event</Button>
-        </div> */}
-        {/* <EventCreateModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} orgId={orgId} setEvents={setEvents} /> */}
+        <div style={{ marginTop: '3vh', display: 'flex', justifyContent: 'space-evenly' }}>
+            <Button variant="normal" onClick={handleManageEvent}>Manage Event</Button>
+        </div>
     </>
   );
 }
 
-export default OrgPage;
+export default EventPage;

@@ -5,6 +5,8 @@ import TestPage from './pages/TestPage'
 import HomePage from './pages/HomePage'
 import OrgPage from './pages/OrgPage'
 import EventPage from './pages/EventPage'
+import OrgEditPage from './pages/OrgEditPage'
+import EventEditPage from './pages/EventEditPage'
 
 export const Pages = () => {
     return (
@@ -15,6 +17,8 @@ export const Pages = () => {
                 <Route path="/test" element={<TestPage/>}/>
                 <Route path="/:orgId" element={<OrgPage />} />
                 <Route path="/:orgId/:eventId" element={<EventPage />} />
+                <Route path="edit/:orgId" element={<OrgEditPage />} />
+                <Route path="edit/:orgId/:eventId" element={<EventEditPage />} />
                 {/* <Route element={<NotFoundPage/>}/> */}
             </Routes>
         </BrowserRouter>
