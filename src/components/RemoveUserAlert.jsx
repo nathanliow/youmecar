@@ -13,7 +13,7 @@ import {
   } from '@chakra-ui/react'
   import { removeUserFromOrg } from './.././Firebase'  
 
-function RemoveUserAlert({ isOpen, onClose, name, orgId, uid }) {
+function RemoveUserAlert({ isOpen, onClose, name, orgId, uid, setPeople }) {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const toast = useToast();
@@ -30,7 +30,7 @@ function RemoveUserAlert({ isOpen, onClose, name, orgId, uid }) {
 				duration: null, 
 				isClosable: false,
 			});
-            const removed = await removeUserFromOrg(orgId, uid);
+            const removed = await removeUserFromOrg(orgId, uid, setPeople);
             if (removed) {
                 toast.close(loadingToast);
                 toast({

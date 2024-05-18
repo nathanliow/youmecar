@@ -7,7 +7,6 @@ import {
     Input,
     useToast,
     VStack,
-    Text,
     Divider,
     Box,
     Spacer,
@@ -15,19 +14,20 @@ import {
     Table,
     Thead,
     Tbody,
-    Tfoot,
     Tr,
     Th,
     Td,
-    TableCaption,
     TableContainer,
     Switch,
+    IconButton
 } from '@chakra-ui/react'
+import { CiCircleRemove } from "react-icons/ci"
 import OrgNavbar from '.././components/Navbar/OrgNavbar.jsx'
-import { getOrg, getUser, getUsersInfo, updateOrgAdmins, getUserRef } from '.././Firebase';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import RemoveUserAlert from '../components/RemoveUserAlert.jsx';
+import { getOrg, getUser, getUsersInfo, updateOrg, getUserRef, getOrgPeople } from '.././Firebase'
+import { useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import RemoveUserAlert from '../components/RemoveUserAlert.jsx'
+import OrgAddMemberModal from '../components/Modal/OrgAddMemberModal'
 
 function OrgEditPage() {
     const { orgId } = useParams();
@@ -42,12 +42,14 @@ function OrgEditPage() {
     const [people, setPeople] = useState([]);
     const [adminList, setAdminList] = useState([]);
     const [changes, setChanges] = useState([]);
+    const [orgImage, setOrgImage] = useState(null);
     const [removeUser, setRemoveUser] = useState({ uid: null, name: '' });
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
     const navigate = useNavigate();
     const toast = useToast();
     const toastShownRef = useRef(false);
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen: isRemoveUserOpen, onOpen: onRemoveUserOpen, onClose: onRemoveUserClose } = useDisclosure();
+    const { isOpen: isAddMemberOpen, onOpen: onAddMemberOpen, onClose: onAddMemberClose } = useDisclosure();
 
     useEffect(() => {
         async function fetchOrg() {
@@ -58,6 +60,9 @@ function OrgEditPage() {
             const adminDocs = await Promise.all(adminPromises);
             const adminUIDs = adminDocs.map(doc => doc.data().uid);
             setOrg(orgDoc.data());
+            setOrgName(orgDoc.data().Name);
+            setOrgCode(orgDoc.data().Code);
+            setOrgImage(orgDoc.data().Image);
             setIsAdmin(adminUIDs.includes(uid))
 
             if (!(adminUIDs.includes(uid)) && !toastShownRef.current) {
@@ -103,37 +108,73 @@ function OrgEditPage() {
         });
     };
 
+    const handleInputChange = (setter, value, field) => {
+        setter(value);
+        setChanges(prevChanges => {
+            const existingChangeIndex = prevChanges.findIndex(change => change.field === field);
+            if (existingChangeIndex !== -1) {
+                const updatedChanges = [...prevChanges];
+                updatedChanges[existingChangeIndex].value = value;
+                return updatedChanges;
+            }
+            return [...prevChanges, { field, value }];
+        });
+    };
+
     const saveChanges = async () => {
         try {
             const orgDoc = await getOrg(orgId);
             const orgData = orgDoc.data();
             let updatedAdmins = orgData.Admins || [];
             let updatedMembers = orgData.Members || [];
+            let updatedFields = {};
     
             changes.forEach(change => {
-                const adminRef = getUserRef(change.uid);
-                if (change.isAdmin) {
-                    if (!updatedAdmins.some(admin => admin.id === change.uid)) {
-                        updatedAdmins.push(adminRef);
-                        // Remove from members if present
-                        updatedMembers = updatedMembers.filter(member => member.id !== change.uid);
+                if (change.uid) {
+                    const adminRef = getUserRef(change.uid);
+                    if (change.isAdmin) {
+                        if (!updatedAdmins.some(admin => admin.id === change.uid)) {
+                            updatedAdmins.push(adminRef);
+                            updatedMembers = updatedMembers.filter(member => member.id !== change.uid);
+                        }
+                    } else {
+                        updatedAdmins = updatedAdmins.filter(admin => admin.id !== change.uid);
+                        if (!updatedMembers.some(member => member.id === change.uid)) {
+                            updatedMembers.push(adminRef);
+                        }
                     }
                 } else {
-                    updatedAdmins = updatedAdmins.filter(admin => admin.id !== change.uid);
-                    // Add back to members if not present
-                    if (!updatedMembers.some(member => member.id === change.uid)) {
-                        updatedMembers.push(adminRef);
-                    }
+                    updatedFields[change.field] = change.value;
                 }
             });
     
-            await updateOrgAdmins(orgId, updatedAdmins, updatedMembers);
-    
+            await updateOrg(orgId, {
+                ...updatedFields,
+                updatedAdmins: updatedAdmins,
+                updatedMembers: updatedMembers,
+            });
+
             setAdminList(updatedAdmins.map(admin => admin.id));
             setChanges([]);
+
+            // Fetch updated users and update the people state
+            const uid = (JSON.parse(localStorage.getItem('currentUser'))).uid;
+            const people = await getOrgPeople(orgId);
+            const updatedOrgDoc = await getOrg(orgId);
+            const updatedAdminPromises = updatedOrgDoc.data().Admins.map(ref => getUser(ref));
+            const updatedAdminDocs = await Promise.all(updatedAdminPromises);
+            const updatedAdminUIDs = updatedAdminDocs.map(doc => doc.data().uid);
+
+            setOrg(updatedOrgDoc.data());
+            setOrgName(updatedOrgDoc.data().Name);
+            setOrgCode(updatedOrgDoc.data().Code);
+            setOrgImage(updatedOrgDoc.data().Image);
+            setIsAdmin(updatedAdminUIDs.includes(uid))
+            setPeople(people);
+
             toast({
                 title: "Changes saved",
-                description: "Admin statuses have been updated.",
+                description: "Changes have been saved and updated.",
                 status: "success",
                 duration: 3000,
                 isClosable: true,
@@ -153,11 +194,19 @@ function OrgEditPage() {
 
     const discardChanges = () => {
         setChanges([]);
+        setOrgName(org.Name);
+        setOrgCode(org.Code);
+        setOrgImage(org.Image);
     };
     
     const handleRemovePerson = (uid, name) => {
-        onOpen();
+        onRemoveUserOpen();
         setRemoveUser({ uid, name });
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        handleInputChange(setOrgImage, file, 'Image');
     };
 
     return (
@@ -174,13 +223,22 @@ function OrgEditPage() {
                     fallbackSrc='/images/serena.png' 
                 />
                 <Spacer/>
-                <VStack>
+                <VStack maxWidth='50vw'>
+                    <Input 
+                        placeholder='Organization Image' 
+						type="file" 
+						accept="image/*" 
+						size='xs'
+						border="0px" 
+						onChange={handleImageChange}
+                    />
+                    <Divider/>
                     <Input 
                         isInvalid={isNameInvalid} 
                         placeholder={org.Name} 
                         isRequired
                         value={orgName}
-                        onChange={(e) => setOrgName(e.target.value)}
+                        onChange={(e) => handleInputChange(setOrgName, e.target.value, 'Name')}
                     />
                     <Divider/>
                     <Input 
@@ -188,7 +246,7 @@ function OrgEditPage() {
                         placeholder={org.Code}
                         isRequired
                         value={orgCode}
-                        onChange={(e) => setOrgCode(e.target.value)}
+                        onChange={(e) => handleInputChange(setOrgCode, e.target.value, 'Code')}
                     />
                     <Divider/>
                 </VStack>
@@ -197,7 +255,7 @@ function OrgEditPage() {
             
             <Box color={textPrimary} display='flex' flexDirection='row' justifyContent='center' alignItems='center' marginTop='20px' marginBottom='20px'>
                 <TableContainer maxH='24vh' overflowY='auto'>
-                    <Table size='sm'>
+                    <Table variant='MemberDisplay' size='sm'>
                         <Thead>
                             <Tr>
                                 <Th>Member</Th>
@@ -212,10 +270,15 @@ function OrgEditPage() {
                                         <Switch 
                                             isChecked={changes.some(change => change.uid === person.uid) ? changes.find(change => change.uid === person.uid).isAdmin : adminList.includes(person.uid)}
                                             onChange={(e) => handleAdminToggle(person.uid, e.target.checked)}
+                                            paddingLeft='5px'
+                                            paddingRight='20px'
                                         />
-                                        <Button colorScheme="red" size="sm" onClick={() => handleRemovePerson(person.uid, person.Name)}>
-                                            Remove
-                                        </Button>
+                                        <IconButton
+                                            variant='back'
+                                            aria-label='Back Button'
+                                            icon={<CiCircleRemove/>}
+                                            onClick={() => handleRemovePerson(person.uid, person.Name)}
+                                        />
                                     </Td>
                                 </Tr>
                             ))}
@@ -223,11 +286,16 @@ function OrgEditPage() {
                     </Table>
                 </TableContainer>
             </Box>
+            <Box display='flex' justifyContent='center' alignItems='center' marginBottom='20px'>
+                <Button variant='normal' w='50vw' onClick={onAddMemberOpen}> Add Member </Button>
+            </Box>
+            
             <Box display='flex' justifyContent='center' alignItems='center' marginTop='20px'>
                 <Button colorScheme="blue" onClick={saveChanges} m={2}>Save Changes</Button>
                 <Button colorScheme="red" onClick={discardChanges} m={2}>Discard Changes</Button>
             </Box>
-            <RemoveUserAlert isOpen={isOpen} onOpen={onOpen} onClose={onClose} name={removeUser.name} orgId={orgId} uid={removeUser.uid} />
+            <RemoveUserAlert isOpen={isRemoveUserOpen} onOpen={onRemoveUserOpen} onClose={onRemoveUserClose} name={removeUser.name} orgId={orgId} uid={removeUser.uid} setPeople={setPeople}/>
+            <OrgAddMemberModal isOpen={isAddMemberOpen} onOpen={onAddMemberOpen} onClose={onAddMemberClose} orgId={orgId} setPeople={setPeople}/>
         </>
     );
 }

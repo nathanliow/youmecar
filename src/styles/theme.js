@@ -3,6 +3,7 @@ import { CardStyle } from './CardStyle'
 import { DropdownStyle } from './DropdownStyle'
 import { ButtonStyle } from './ButtonStyle'
 import { DrawerStyle } from './DrawerStyle'
+import { TableStyle } from './TableStyle'
 
 const theme = {
     config: {
@@ -23,8 +24,8 @@ const theme = {
             dark: 'white',
         },
         textSecondary: {
-            light: '#888888',
-            dark: '#888888',
+            light: '#E8E8E8',
+            dark: '#2D2D2D',
         },
         overlay: {
             light: 'blackAlpha.600',
@@ -36,6 +37,7 @@ const theme = {
         Accordion: DropdownStyle,
         Button: ButtonStyle,
         Drawer: DrawerStyle,
+        Table: TableStyle,
     },
 };
 

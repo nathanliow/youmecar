@@ -4,6 +4,7 @@ import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, query, where, getDocs, doc, setDoc, arrayUnion, updateDoc, addDoc, increment, getDoc, onSnapshot } from "firebase/firestore";
 import { firebaseConfig } from "./FirebaseConfig";
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { LiaEthernetSolid } from "react-icons/lia";
     
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -91,14 +92,13 @@ const checkIfOrgExists = async (orgCode) => {
 };
 
 // Checks if user is already in a given org
-const checkIfOrgAlreadyJoined = async (orgCode) => {
+const checkIfOrgAlreadyJoined = async (orgCode, user) => {
     try {
-        const user = auth.currentUser;
         const userDocSnap = await getDoc(doc(firestore, "users", user.uid));
         const activeOrgs = userDocSnap.data().ActiveOrgs;
         
-         // Iterate over each organization reference in ActiveOrgs
-         for (const orgRef of activeOrgs) {
+        // Iterate over each organization reference in ActiveOrgs
+        for (const orgRef of activeOrgs) {
             // Get the document snapshot of the organization
             const orgDocSnap = await getDoc(orgRef);
             // Check if the organization's code matches the provided orgCode
@@ -121,7 +121,7 @@ const handleCreateOrg = async (orgImage, orgName, orgCode, setActiveOrgs) => {
         const orgExists = (!querySnapshotCode.empty);
         
         if (!orgExists) {
-            const user = auth.currentUser;
+            const user = JSON.parse(localStorage.getItem('currentUser'));
             // Create a new organization
             const newOrgRef = doc(collection(firestore, "organizations"));
             const userRef = doc(firestore, "users", user.uid);
@@ -234,9 +234,9 @@ const getActiveUserInfo = async () => {
 };
 
 // uploads an image into firebase storage and returns the download URL to the image (for organization images)
-const uploadImage = async (image, name) => {
+const uploadImage = async (image) => {
     const storage = getStorage();
-    const storageRef = ref(storage, `images/${name}/${image.name}`);
+    const storageRef = ref(storage, `images/${image.name}`);
   
     await uploadBytes(storageRef, image);
   
@@ -291,6 +291,54 @@ const handleCreateEvent = async (orgId, image, name, location, time, setEvents) 
     }
 }
 
+// adds a user to an org given their gmail
+const handleAddUserToOrg = async (orgId, email, setPeople) => {
+    try {
+        const orgRef = doc(firestore, "organizations", orgId);
+        const orgDoc = await getDoc(orgRef);
+        const orgCode = orgDoc.data().Code;
+        
+        // Query the users collection to find the user by Gmail
+        const usersQuery = query(collection(firestore, "users"), where("Email", "==", email));
+        const querySnapshot = await getDocs(usersQuery);
+
+        if (querySnapshot.empty) {
+            console.error(`No user found using ${email}`);
+            return 1;
+        }
+
+        // Get the user document reference and data
+        const userDoc = querySnapshot.docs[0];
+        const userRef = userDoc.ref;
+
+        const alreadyJoined = await checkIfOrgAlreadyJoined(orgCode, userDoc.data());
+        if (alreadyJoined) {
+            return 2;
+        }
+
+        // Update the organization
+        await updateDoc(orgRef, {
+            Members: arrayUnion(userRef),
+            numMembers: increment(1),
+        });
+
+        // Update the user's activeOrgs array
+        await updateDoc(userRef, {
+            ActiveOrgs: arrayUnion(orgRef)
+        });
+
+        // update the org edit screen after adding their email
+        const people = await getOrgPeople(orgId);
+        setPeople(people);
+
+        return 0;
+
+    } catch (error) {
+        console.error("Error adding user to org", error);
+        return 1;
+    }
+}
+
 // get a user based on single ref
 const getUser = async (ref) => {
     try {
@@ -318,7 +366,7 @@ const getOrg = async (orgId) => {
         // get event docs from organization subcollection
         const orgRef = doc(firestore, "organizations", orgId);
         const orgDoc = await getDoc(orgRef);
-
+        
         return orgDoc;
     } catch (error) {
         console.error("Error fetching org:", error);
@@ -387,21 +435,35 @@ const getRides = async (orgId, eventId) => {
     }
 }
 
-// updates org admins given the updated admins
-const updateOrgAdmins = async (orgId, updatedAdmins, updatedMembers) => {
-    const orgRef = doc(firestore, "organizations", orgId);
-    const adminRefs = updatedAdmins.map(admin => {
-        return typeof admin === 'string' ? doc(firestore, "users", admin) : admin;
-    });
+// updates org admins given the updates
+const updateOrg = async (orgId, updates) => {
+    try {
+        const orgRef = doc(firestore, "organizations", orgId);
+        const { updatedAdmins, updatedMembers, Name, Code, Image } = updates;
 
-    await updateDoc(orgRef, {
-        Admins: adminRefs,
-        Members: updatedMembers
-    });
+        const adminRefs = updatedAdmins.map(admin => {
+            return typeof admin === 'string' ? doc(firestore, "users", admin) : admin;
+        });
+
+        let downloadURL = ""
+        if (Image) {
+            downloadURL = await uploadImage(Image);
+        }
+
+        await updateDoc(orgRef, {
+            Admins: adminRefs,
+            Members: updatedMembers,
+            ...(Name && { Name }),
+            ...(Code && { Code }),
+            ...(downloadURL && { Image: downloadURL }),
+        });
+    } catch (error) {
+        console.error("Error updating org", error);
+    }
 };
 
 // removes a user from an org 
-const removeUserFromOrg = async (orgId, uid) => {
+const removeUserFromOrg = async (orgId, uid, setPeople) => {
     try {
         // Fetch the organization document
         const orgRef = doc(firestore, "organizations", orgId);
@@ -409,7 +471,7 @@ const removeUserFromOrg = async (orgId, uid) => {
         const orgData = orgDoc.data();
 
         // Fetch the user document
-        const userRef = doc(firestore, "users", uid);;
+        const userRef = doc(firestore, "users", uid);
         const userDoc = await getUser(userRef);
         const userData = userDoc.data();
 
@@ -431,11 +493,28 @@ const removeUserFromOrg = async (orgId, uid) => {
         await updateDoc(userRef, {
             ActiveOrgs: updatedActiveOrgs,
         });
+
+        // update the org edit screen after adding their email
+        const people = await getOrgPeople(orgId);
+        setPeople(people);
         
         console.log(`User ${uid} has been successfully removed from organization ${orgId}`);
         return true;
     } catch (error) {
         console.error('Error removing user from organization:', error);
+        return false;
+    }
+};
+
+// gets Admins and Members' documents of an org
+const getOrgPeople = async (orgId) => {
+    try {
+        const orgDoc = await getOrg(orgId);
+        const membersData = await getUsersInfo(orgDoc.data().Members);
+        const adminsData = await getUsersInfo(orgDoc.data().Admins);
+        return membersData.concat(adminsData)
+    } catch (error) {
+        console.error('Error getting admins and members of this organization:', error);
         return false;
     }
 };
@@ -447,6 +526,7 @@ export {
     handleSignOut,
     handleJoinOrg,
     handleCreateOrg,
+    handleAddUserToOrg,
     checkIfOrgAlreadyJoined,
     getActiveOrgs,
     getActiveUserInfo,
@@ -458,6 +538,7 @@ export {
     getEvent,
     getEvents,
     getRides,
-    updateOrgAdmins,
+    updateOrg,
     removeUserFromOrg,
+    getOrgPeople,
 };

@@ -141,7 +141,6 @@ function EventCreateModal({ isOpen, onClose, orgId, setEvents }) {
                         value={eventLocation}
                         onChange={(e) => setEventLocation(e.target.value)}
                     />
-                    <Divider/>
                 </VStack>
             </Center>
           </ModalBody>
