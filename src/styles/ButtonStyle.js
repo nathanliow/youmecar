@@ -22,14 +22,14 @@ const back = defineStyle(() => {
     const { colorMode } = useColorMode();
     const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
-    const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
+    const hover = colorMode === "light" ? theme.colors.hover.light : theme.colors.hover.dark;
     
     return {
         fontSize: "30px",
         color: textPrimary,
         background: primary,
         _hover: {
-            background: textSecondary,
+            background: hover,
         },
     };
 });
@@ -39,14 +39,14 @@ const darkMode = defineStyle(() => {
     const { colorMode } = useColorMode();
     const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
-    const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
+    const hover = colorMode === "light" ? theme.colors.hover.light : theme.colors.hover.dark;
     
     return {
         fontSize: "30px",
         color: textPrimary,
         background: primary,
         _hover: {
-            background: textSecondary,
+            background: hover,
         },
     };
 });
@@ -56,14 +56,14 @@ const logOut = defineStyle(() => {
     const { colorMode } = useColorMode();
     const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
-    const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
+    const hover = colorMode === "light" ? theme.colors.hover.light : theme.colors.hover.dark;
     
     return {
         fontSize: "30px",
         color: textPrimary,
         background: primary,
         _hover: {
-            background: textSecondary,
+            background: hover,
         },
     };
 });
@@ -71,9 +71,7 @@ const logOut = defineStyle(() => {
 const saveChanges = defineStyle(() => {
     const theme = useTheme();
     const { colorMode } = useColorMode();
-    const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
-    const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
     
     return {
         color: textPrimary,
@@ -88,9 +86,7 @@ const saveChanges = defineStyle(() => {
 const discardChanges = defineStyle(() => {
     const theme = useTheme();
     const { colorMode } = useColorMode();
-    const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
-    const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
     
     return {
         color: textPrimary,

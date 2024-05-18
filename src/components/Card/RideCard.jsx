@@ -46,8 +46,9 @@ function RideCard({ rideImage, driver, time, numRiders, maxRiders, riders }) {
             <Image
                 objectFit='cover'
                 maxW='30%'
-                src="cars/dark_suv.png"
+                src="/cars/dark_suv.png"
                 alt='Car Image'
+                fallbackSrc='/cars/light_sedan.png' 
             />
 
             <Stack gap='0px' maxWidth='154px'>

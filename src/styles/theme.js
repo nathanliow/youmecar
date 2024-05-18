@@ -24,8 +24,8 @@ const theme = {
             dark: 'white',
         },
         textSecondary: {
-            light: '#E8E8E8',
-            dark: '#2D2D2D',
+            light: '#888888',
+            dark: '#888888',
         },
         overlay: {
             light: 'blackAlpha.600',

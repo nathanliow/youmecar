@@ -68,7 +68,7 @@ function OrgPage() {
 
   return (
     <>
-        <OrgNavbar orgName={org.Name}/>
+        <OrgNavbar orgName={org.Name} navigateTo={'/home'}/>
         <SearchBar onSearch={setSearchQuery}/>
         <div style={{ maxHeight: isAdmin ? '70vh' : '80vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
             {filteredEvents.map((event, index) => (

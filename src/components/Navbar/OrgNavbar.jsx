@@ -5,7 +5,7 @@ import ProfileDrawer from '../Drawer/ProfileDrawer';
 import { getActiveUserInfo } from '../../Firebase';
 import { useNavigate } from 'react-router-dom';
 
-function OrgNavbar({ orgName }) {
+function OrgNavbar({ orgName, navigateTo }) {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
@@ -16,7 +16,7 @@ function OrgNavbar({ orgName }) {
     const navigate = useNavigate();
 
     const handleBackClick = () => {
-        navigate('/home');
+        navigate(navigateTo);
     };
 
     const handleProfileClick = () => {

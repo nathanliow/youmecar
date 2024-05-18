@@ -260,7 +260,7 @@ function OrgEditPage() {
 
     return (
         <>
-            <OrgNavbar orgName={org.Name}/>
+            <OrgNavbar orgName={org.Name} navigateTo={`/${orgId}`}/>
             <Box color={textPrimary} display='flex' flexDirection='row' justifyContent='center' alignItems='center' marginTop='20px' marginBottom='20px'>
                 <Spacer/>
                 <Image
