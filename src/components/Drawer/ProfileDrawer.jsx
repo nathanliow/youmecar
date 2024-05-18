@@ -25,7 +25,7 @@ function ProfileDrawer({ isOpen, onClose, userInfo }) {
     const navigate = useNavigate();
 
     const handleProfileClick = () => {
-        console.log("Profile Page clicked!");
+        navigate('/profile')
     };
 
     const handleSettingsClick = () => {

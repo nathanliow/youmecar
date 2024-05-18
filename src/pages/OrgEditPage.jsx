@@ -50,7 +50,6 @@ function OrgEditPage() {
     const toastShownRef = useRef(false);
     const { isOpen: isRemoveUserOpen, onOpen: onRemoveUserOpen, onClose: onRemoveUserClose } = useDisclosure();
     const { isOpen: isAddMemberOpen, onOpen: onAddMemberOpen, onClose: onAddMemberClose } = useDisclosure();
-    const { isOpen: isSaveChangesOpen, onOpen: onSaveChangesOpen, onClose: onSaveChangesClose } = useDisclosure();
 
     useEffect(() => {
         async function fetchOrg() {
@@ -96,12 +95,6 @@ function OrgEditPage() {
         fetchUsers();
         
     }, [org]);
-
-    useEffect(() => {
-        if (changes.length > 0) {
-            onSaveChangesOpen();
-        }
-    }, [changes, onSaveChangesOpen]);
 
     const handleAdminToggle = (uid, isChecked) => {
         setChanges(prevChanges => {

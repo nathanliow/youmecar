@@ -35,8 +35,8 @@ onAuthStateChanged(auth, async (user) => {
                 ActiveOrgs: [],
                 Friends: [],
             });
+            localStorage.setItem('currentUser', JSON.stringify(user));
         }
-        localStorage.setItem('currentUser', JSON.stringify(user));
     } else {
         localStorage.removeItem('currentUser');
     }
@@ -435,7 +435,32 @@ const getRides = async (orgId, eventId) => {
     }
 }
 
-// updates org admins given the updates
+// updates user given the updates
+const updateUser = async (uid, updates) => {
+    try {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const userRef = doc(firestore, "users", uid);
+        const { Name, Pfp } = updates;
+
+        let downloadURL = user.photoURL;
+        if (Pfp) {
+            downloadURL = await uploadImage(Pfp);
+        }
+
+        await updateDoc(userRef, {
+            ...(Name && { Name }),
+            ...(downloadURL && { Pfp: downloadURL }),
+        });
+
+        const updatedLocalStorageFields = { ...user, displayName: Name, photoURL: downloadURL };
+        localStorage.setItem('currentUser', JSON.stringify(updatedLocalStorageFields));
+
+    } catch (error) {
+        console.error("Error updating user", error);
+    }
+};
+
+// updates org given the updates
 const updateOrg = async (orgId, updates) => {
     try {
         const orgRef = doc(firestore, "organizations", orgId);
@@ -539,7 +564,9 @@ export {
     getEvent,
     getEvents,
     getRides,
+    updateUser,
     updateOrg,
+    uploadImage,
     removeUserFromOrg,
     getOrgPeople,
 };

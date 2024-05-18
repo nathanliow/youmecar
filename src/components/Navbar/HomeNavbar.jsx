@@ -20,7 +20,6 @@ function HomeNavbar() {
 
     const handleProfileClick = () => {
         onOpen();
-        console.log("Profile clicked!");
     };
 
     useEffect(() => {

@@ -5,7 +5,7 @@ import ProfileDrawer from '../Drawer/ProfileDrawer';
 import { getActiveUserInfo } from '../../Firebase';
 import { useNavigate } from 'react-router-dom';
 
-function OrgNavbar({ orgName, navigateTo }) {
+function OrgNavbar({ orgName, navigateTo, refresh }) {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
@@ -34,7 +34,7 @@ function OrgNavbar({ orgName, navigateTo }) {
         };
 
         fetchUserInfo();
-    }, []); 
+    }, [refresh]); 
 
     return (
       <>
@@ -47,7 +47,11 @@ function OrgNavbar({ orgName, navigateTo }) {
             />
             <div style={{ textAlign: 'center', maxWidth: '60%' }}>
                 {orgName === '' ? (
-                    <Text noOfLines={1} marginTop='24px' marginBottom='24px' style={{color: primary, fontWeight: 'bold'}}>_</Text>
+                    <div style={{ display: 'grid', gridTemplateRows: 'repeat(3, 1fr)', color: textPrimary, fontWeight: 'bold', fontSize: '16px' }}>
+                        <div>YOU</div>
+                        <div>MEE</div>
+                        <div>CAR</div>
+                    </div>
                 ) : (
                     <Text noOfLines={1} marginTop='24px' marginBottom='24px' style={{color: textPrimary, fontWeight: 'bold'}}>{orgName}</Text>
                 )}
