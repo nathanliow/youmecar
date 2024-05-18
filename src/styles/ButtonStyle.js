@@ -6,10 +6,14 @@ const normal = defineStyle(() => {
     const { colorMode } = useColorMode();
     const secondary = colorMode === "light" ? theme.colors.secondary.light : theme.colors.secondary.dark;
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
+    const hover = colorMode === "light" ? theme.colors.hover.light : theme.colors.hover.dark;
     
     return {
         color: textPrimary,
         background: secondary,
+        _hover: {
+            background: hover,
+        },
     };
 }); 
 
@@ -64,11 +68,46 @@ const logOut = defineStyle(() => {
     };
 });
 
+const saveChanges = defineStyle(() => {
+    const theme = useTheme();
+    const { colorMode } = useColorMode();
+    const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
+    const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
+    const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
+    
+    return {
+        color: textPrimary,
+        background: '#3182CE',
+        _hover: {
+            background: '#669ED2',
+        },
+    };
+});
+
+
+const discardChanges = defineStyle(() => {
+    const theme = useTheme();
+    const { colorMode } = useColorMode();
+    const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
+    const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
+    const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
+    
+    return {
+        color: textPrimary,
+        background: '#D63939',
+        _hover: {
+            background: '#F67878',
+        },
+    };
+});
+
 export const ButtonStyle = defineStyleConfig({ 
     variants: { 
         normal,
         back, 
         darkMode, 
         logOut,
+        saveChanges,
+        discardChanges,
     }
 });

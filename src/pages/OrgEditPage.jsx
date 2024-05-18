@@ -23,7 +23,7 @@ import {
 } from '@chakra-ui/react'
 import { CiCircleRemove } from "react-icons/ci"
 import OrgNavbar from '.././components/Navbar/OrgNavbar.jsx'
-import { getOrg, getUser, getUsersInfo, updateOrg, getUserRef, getOrgPeople } from '.././Firebase'
+import { getOrg, getUser, getUsersInfo, updateOrg, getUserRef, getOrgPeople, checkIfOrgExists } from '.././Firebase'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import RemoveUserAlert from '../components/RemoveUserAlert.jsx'
@@ -50,6 +50,7 @@ function OrgEditPage() {
     const toastShownRef = useRef(false);
     const { isOpen: isRemoveUserOpen, onOpen: onRemoveUserOpen, onClose: onRemoveUserClose } = useDisclosure();
     const { isOpen: isAddMemberOpen, onOpen: onAddMemberOpen, onClose: onAddMemberClose } = useDisclosure();
+    const { isOpen: isSaveChangesOpen, onOpen: onSaveChangesOpen, onClose: onSaveChangesClose } = useDisclosure();
 
     useEffect(() => {
         async function fetchOrg() {
@@ -96,6 +97,12 @@ function OrgEditPage() {
         
     }, [org]);
 
+    useEffect(() => {
+        if (changes.length > 0) {
+            onSaveChangesOpen();
+        }
+    }, [changes, onSaveChangesOpen]);
+
     const handleAdminToggle = (uid, isChecked) => {
         setChanges(prevChanges => {
             const existingChangeIndex = prevChanges.findIndex(change => change.uid === uid);
@@ -122,13 +129,53 @@ function OrgEditPage() {
     };
 
     const saveChanges = async () => {
+        const alphanumericRegex = /^[a-zA-Z0-9]+$/;
         try {
+            // check if there are even any changes
+            if (changes.length === 0) {
+                toast({
+                    title: "No changes to be saved.",
+                    status: "info",
+                    duration: 5000,
+                    isClosable: true,
+                });
+                return;
+            }
+
+            // check if orgCode isn't 6 in length
+            if (orgCode.length !== 6 || !orgCode.match(alphanumericRegex)) {
+                setIsCodeInvalid(true);
+                toast({
+                    title: "Error",
+                    description: `The code '${orgCode}' is invalid.`,
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+                return;
+            }
+
+            // check if an org already has the changed code
+            const querySnapshotCode = await checkIfOrgExists(orgCode);
+            const orgExists = (!querySnapshotCode.empty);
+            if (orgExists) {
+                setIsCodeInvalid(true);
+                toast({
+                    title: "Error",
+                    description: `There is already an organization with code '${orgCode}'.`,
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+                return;
+            }
+            
             const orgDoc = await getOrg(orgId);
             const orgData = orgDoc.data();
             let updatedAdmins = orgData.Admins || [];
             let updatedMembers = orgData.Members || [];
             let updatedFields = {};
-    
+
             changes.forEach(change => {
                 if (change.uid) {
                     const adminRef = getUserRef(change.uid);
@@ -171,12 +218,13 @@ function OrgEditPage() {
             setOrgImage(updatedOrgDoc.data().Image);
             setIsAdmin(updatedAdminUIDs.includes(uid))
             setPeople(people);
+            setIsCodeInvalid(false);
 
             toast({
                 title: "Changes saved",
                 description: "Changes have been saved and updated.",
                 status: "success",
-                duration: 3000,
+                duration: 5000,
                 isClosable: true,
             });
         } catch (error) {
@@ -185,7 +233,7 @@ function OrgEditPage() {
                 title: "Error",
                 description: "There was an error saving the changes.",
                 status: "error",
-                duration: 3000,
+                duration: 5000,
                 isClosable: true,
             });
         }
@@ -197,6 +245,7 @@ function OrgEditPage() {
         setOrgName(org.Name);
         setOrgCode(org.Code);
         setOrgImage(org.Image);
+        setIsCodeInvalid(false);
     };
     
     const handleRemovePerson = (uid, name) => {
@@ -234,7 +283,6 @@ function OrgEditPage() {
                     />
                     <Divider/>
                     <Input 
-                        isInvalid={isNameInvalid} 
                         placeholder={org.Name} 
                         isRequired
                         value={orgName}
@@ -254,7 +302,7 @@ function OrgEditPage() {
             </Box>
             
             <Box color={textPrimary} display='flex' flexDirection='row' justifyContent='center' alignItems='center' marginTop='20px' marginBottom='20px'>
-                <TableContainer maxH='24vh' overflowY='auto'>
+                <TableContainer maxH='40vh' overflowY='auto'>
                     <Table variant='MemberDisplay' size='sm'>
                         <Thead>
                             <Tr>
@@ -286,13 +334,17 @@ function OrgEditPage() {
                     </Table>
                 </TableContainer>
             </Box>
-            <Box display='flex' justifyContent='center' alignItems='center' marginBottom='20px'>
-                <Button variant='normal' w='50vw' onClick={onAddMemberOpen}> Add Member </Button>
-            </Box>
+
             
-            <Box display='flex' justifyContent='center' alignItems='center' marginTop='20px'>
-                <Button colorScheme="blue" onClick={saveChanges} m={2}>Save Changes</Button>
-                <Button colorScheme="red" onClick={discardChanges} m={2}>Discard Changes</Button>
+            <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
+                <Box display='flex' justifyContent='center' alignItems='center' marginBottom='10px'>
+                    <Button variant='normal' onClick={onAddMemberOpen}> Add Member </Button>
+                </Box>
+                <Box display='flex' flexDirection='row' justifyContent='center' alignItems='center' marginBottom='10px'>
+                    <Button variant='saveChanges' onClick={saveChanges} m={2}>Save Changes</Button>
+                    <Button variant='discardChanges' onClick={discardChanges} m={2}>Discard Changes</Button>
+                </Box>
+                
             </Box>
             <RemoveUserAlert isOpen={isRemoveUserOpen} onOpen={onRemoveUserOpen} onClose={onRemoveUserClose} name={removeUser.name} orgId={orgId} uid={removeUser.uid} setPeople={setPeople}/>
             <OrgAddMemberModal isOpen={isAddMemberOpen} onOpen={onAddMemberOpen} onClose={onAddMemberClose} orgId={orgId} setPeople={setPeople}/>

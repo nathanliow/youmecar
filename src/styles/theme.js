@@ -31,6 +31,10 @@ const theme = {
             light: 'blackAlpha.600',
             dark: 'blackAlpha.800',
         },
+        hover: {
+            light: '#F5F5F5',
+            dark: '#4B4B4B',
+        },
     },
     components: {
         Card: CardStyle,

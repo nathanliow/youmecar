@@ -528,6 +528,7 @@ export {
     handleCreateOrg,
     handleAddUserToOrg,
     checkIfOrgAlreadyJoined,
+    checkIfOrgExists,
     getActiveOrgs,
     getActiveUserInfo,
     getUsersInfo,
