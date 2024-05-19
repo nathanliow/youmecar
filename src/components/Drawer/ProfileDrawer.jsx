@@ -28,9 +28,9 @@ function ProfileDrawer({ isOpen, onClose, userInfo }) {
         navigate('/profile')
     };
 
-    const handleSettingsClick = () => {
-        console.log("Settings clicked!");
-    };
+    // const handleSettingsClick = () => {
+    //     console.log("Settings clicked!");
+    // };
 
     const handleSignOutAndNavigate = () => {
       handleSignOut(); // Call handleSignOut function
@@ -47,10 +47,10 @@ function ProfileDrawer({ isOpen, onClose, userInfo }) {
         <DrawerHeader></DrawerHeader>
         <DrawerBody display="flex" flexDirection="column" alignItems="center">
           <div style={{ marginTop: '30px' }}> 
-            <Avatar name={userInfo && userInfo.displayName} size='xl' src={userInfo && userInfo.pfp} bg={secondary} />
+            <Avatar name={userInfo && userInfo.name} size='xl' src={userInfo && userInfo.pfp} bg={secondary} />
           </div>
           <div style={{ marginTop: '10px', fontSize: '24px' }}> 
-          {userInfo && userInfo.displayName}
+          {userInfo && userInfo.name}
           </div>
           <div style={{ fontSize: '16px' }}> 
             {userInfo && userInfo.email}
@@ -63,10 +63,10 @@ function ProfileDrawer({ isOpen, onClose, userInfo }) {
               <IoMdPerson style={{ marginRight: '20px' }} />
               Profile
             </button>
-            <button onClick={handleSettingsClick} style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+            {/* <button onClick={handleSettingsClick} style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
               <IoMdSettings style={{ marginRight: '20px' }} />
               Settings
-            </button>
+            </button> */}
           </div>
         </DrawerBody>
 

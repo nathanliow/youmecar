@@ -35,8 +35,8 @@ onAuthStateChanged(auth, async (user) => {
                 ActiveOrgs: [],
                 Friends: [],
             });
-            localStorage.setItem('currentUser', JSON.stringify(user));
         }
+        localStorage.setItem('currentUser', JSON.stringify(user));
     } else {
         localStorage.removeItem('currentUser');
     }
@@ -92,9 +92,9 @@ const checkIfOrgExists = async (orgCode) => {
 };
 
 // Checks if user is already in a given org
-const checkIfOrgAlreadyJoined = async (orgCode, user) => {
+const checkIfOrgAlreadyJoined = async (orgCode, uid) => {
     try {
-        const userDocSnap = await getDoc(doc(firestore, "users", user.uid));
+        const userDocSnap = await getDoc(doc(firestore, "users", uid));
         const activeOrgs = userDocSnap.data().ActiveOrgs;
         
         // Iterate over each organization reference in ActiveOrgs
@@ -121,10 +121,10 @@ const handleCreateOrg = async (orgImage, orgName, orgCode, setActiveOrgs) => {
         const orgExists = (!querySnapshotCode.empty);
         
         if (!orgExists) {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const uid = JSON.parse(localStorage.getItem('currentUser')).uid;
             // Create a new organization
             const newOrgRef = doc(collection(firestore, "organizations"));
-            const userRef = doc(firestore, "users", user.uid);
+            const userRef = doc(firestore, "users", uid);
             const downloadURL = ""
             if (orgImage) {
                 downloadURL = await uploadImage(orgImage, orgName);
@@ -195,10 +195,8 @@ const handleJoinOrg = async (orgCode, setActiveOrgs) => {
 // gets all the active orgs for a user
 const getActiveOrgs = async () => {
     try {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
-        // Get the user document
-        const userDoc = await getDoc(doc(firestore, "users", user.uid));
-        // Get the user's ActiveOrgs array
+        const uid = JSON.parse(localStorage.getItem('currentUser')).uid;
+        const userDoc = await getDoc(doc(firestore, "users", uid));
         const activeOrgs = userDoc.data().ActiveOrgs;
         
         // Get the organization documents for each organization reference in the ActiveOrgs array
@@ -216,17 +214,16 @@ const getActiveOrgs = async () => {
 // gets all the user information for Profile Drawer
 const getActiveUserInfo = async () => {
     try {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
-        // Get the user document
-        const userDoc = await getDoc(doc(firestore, "users", user.uid));
+        const uid = JSON.parse(localStorage.getItem('currentUser')).uid;
+        const userDoc = await getDoc(doc(firestore, "users", uid));
     
-        const displayName = user.displayName;
-        const email = user.email;
-        const pfp = user.photoURL;
+        const name = userDoc.data().Name;
+        const email = userDoc.data().Email;
+        const pfp = userDoc.data().Pfp;
         const numFriends = userDoc.data().Friends.length;
     
         // Return user information including the number of friends
-        return { displayName, email, pfp, numFriends };
+        return { name, email, pfp, numFriends };
     } catch (error) {
         console.error('Error retrieving active user info:', error);
         throw error; // Rethrow the error to handle it elsewhere if needed
@@ -234,9 +231,9 @@ const getActiveUserInfo = async () => {
 };
 
 // uploads an image into firebase storage and returns the download URL to the image (for organization images)
-const uploadImage = async (image) => {
+const uploadImage = async (image, path) => {
     const storage = getStorage();
-    const storageRef = ref(storage, `images/${image.name}`);
+    const storageRef = ref(storage, `images/${path}/${image.name}`);
   
     await uploadBytes(storageRef, image);
   
@@ -438,22 +435,18 @@ const getRides = async (orgId, eventId) => {
 // updates user given the updates
 const updateUser = async (uid, updates) => {
     try {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
         const userRef = doc(firestore, "users", uid);
         const { Name, Pfp } = updates;
 
-        let downloadURL = user.photoURL;
+        let downloadURL = ""
         if (Pfp) {
-            downloadURL = await uploadImage(Pfp);
+            downloadURL = await uploadImage(Pfp, 'pfps');
         }
 
         await updateDoc(userRef, {
             ...(Name && { Name }),
-            ...(downloadURL && { Pfp: downloadURL }),
+            ...(Pfp && { Pfp: downloadURL }),
         });
-
-        const updatedLocalStorageFields = { ...user, displayName: Name, photoURL: downloadURL };
-        localStorage.setItem('currentUser', JSON.stringify(updatedLocalStorageFields));
 
     } catch (error) {
         console.error("Error updating user", error);
@@ -472,7 +465,7 @@ const updateOrg = async (orgId, updates) => {
 
         let downloadURL = ""
         if (Image) {
-            downloadURL = await uploadImage(Image);
+            downloadURL = await uploadImage(Image, 'orgPfps');
         }
 
         await updateDoc(orgRef, {

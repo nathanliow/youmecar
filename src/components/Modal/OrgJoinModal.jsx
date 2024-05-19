@@ -45,8 +45,8 @@ function OrgJoinModal({ isOpen, onClose, setActiveOrgs }) {
 		});
       
         if (orgCode.length === 6) {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            const alrJoined = await checkIfOrgAlreadyJoined(orgCode, currentUser);
+            const uid = JSON.parse(localStorage.getItem('currentUser')).uid;
+            const alrJoined = await checkIfOrgAlreadyJoined(orgCode, uid);
             if (!alrJoined) {
                 const joined = await handleJoinOrg(orgCode, setActiveOrgs);
                 if (joined) {

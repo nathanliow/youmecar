@@ -51,7 +51,7 @@ function HomeNavbar() {
                     <div>CAR</div>
                 </div>
             </div>
-            <Avatar name={userInfo && userInfo.displayName} size='md' src={userInfo && userInfo.pfp} bg={secondary} onClick={handleProfileClick} style={{ cursor: 'pointer' }}/>
+            <Avatar name={userInfo && userInfo.name} size='md' src={userInfo && userInfo.pfp} bg={secondary} onClick={handleProfileClick} style={{ cursor: 'pointer' }}/>
         </div>
         <ProfileDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose} userInfo={userInfo}/>
       </>

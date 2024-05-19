@@ -118,7 +118,7 @@ function EventCard({ orgId, eventId, eventImage, name, location, time, numGoing,
                             <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
                                 <div style={{ display: 'flex', flexDirection: 'row', position: 'relative', zIndex: '1' }}> 
                                     {avatarUsers.map((user, index) => (
-                                        <Avatar key={index} name={user.displayName} src={user.Pfp} size='xs' bg={primary} style={{ marginLeft: index !== 0 && '-5px' }}/>
+                                        <Avatar key={index} name={user.name} src={user.Pfp} size='xs' bg={primary} style={{ marginLeft: index !== 0 && '-5px' }}/>
                                     ))}
                                 </div>
                                 <div>

@@ -20,7 +20,7 @@ export const Pages = () => {
                 <Route path="/:orgId" element={<OrgPage />} />
                 <Route path="/:orgId/:eventId" element={<EventPage />} />
                 <Route path="edit/:orgId" element={<OrgEditPage />} />
-                <Route path="edit/:orgId/:eventId" element={<EventEditPage />} />
+                {/* <Route path="edit/:orgId/:eventId" element={<EventEditPage />} /> */}
                 
                 {/* <Route element={<NotFoundPage/>}/> */}
             </Routes>
