@@ -8,7 +8,7 @@ import {
 import EventNavbar from '.././components/Navbar/EventNavbar.jsx'
 import RideCard from '../components/Card/RideCard.jsx';
 import SearchBar from '../components/SearchBar.jsx';
-import { getRides } from '.././Firebase';
+import { getRides, getEvent } from '.././Firebase';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,6 +16,7 @@ function EventPage() {
     const { orgId, eventId } = useParams();
     const theme = useTheme();
     const { colorMode } = useColorMode();
+    const [event, setEvent] = useState('');
     const [rides, setRides] = useState([]);
     const [filteredRides, setFilteredRides] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -44,17 +45,30 @@ function EventPage() {
             setFilteredRides(rides.filter(ride => ride.Name.toLowerCase().includes(searchQuery.toLowerCase())));
         }
     }, [rides, searchQuery]);
+
+    useEffect(() => {
+        async function fetchEvent() {
+        try {
+            const eventDoc = await getEvent(orgId, eventId);
+
+            setEvent(eventDoc.data());
+        } catch (error) {
+            console.error('Error fetching event:', error);
+        }
+        }
+        fetchEvent();
+    }, []);
   
 
   return (
     <>
-        <EventNavbar orgId={orgId} eventId={eventId}/>
+        <EventNavbar eventName={event.Name} navigateTo={`/${orgId}`}/>
         <SearchBar onSearch={setSearchQuery}/>
         <div style={{ maxHeight: '70vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
             {/* {filteredRides.map((ride, index) => (
                 ride && <RideCard key={index} driver={ride.Driver} time={ride.Time} numRiders={ride.numRiders} maxRiders={ride.maxRiders} riders={ride.Riders}/>
             ))} */}
-            <RideCard driver="joe" time="2:00 PM" numRiders="4" maxRiders="5" riders={['ABC', 'DEF', 'GEE', 'EFE']}/>
+            {/* <RideCard driver="joe" time="2:00 PM" numRiders="4" maxRiders="5" riders={['ABC', 'DEF', 'GEE', 'EFE']}/> */}
         </div>
         <div style={{ marginTop: '3vh', display: 'flex', justifyContent: 'space-evenly' }}>
             <Button variant="normal" onClick={handleManageEvent}>Manage Event</Button>

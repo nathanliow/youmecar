@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
+import { GoogleAuthProvider, getAuth, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, confirmPasswordReset } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, query, where, getDocs, doc, setDoc, arrayUnion, updateDoc, addDoc, increment, getDoc, onSnapshot } from "firebase/firestore";
 import { firebaseConfig } from "./FirebaseConfig";
@@ -125,7 +125,7 @@ const handleCreateOrg = async (orgImage, orgName, orgCode, setActiveOrgs) => {
             // Create a new organization
             const newOrgRef = doc(collection(firestore, "organizations"));
             const userRef = doc(firestore, "users", uid);
-            const downloadURL = ""
+            let downloadURL = ""
             if (orgImage) {
                 downloadURL = await uploadImage(orgImage, orgName);
             }
@@ -266,15 +266,22 @@ const handleCreateEvent = async (orgId, image, name, location, time, setEvents) 
     try {
         const orgRef = doc(firestore, "organizations", orgId);
         const eventsRef = doc(collection(orgRef, 'events'));
+        const orgDoc = await getDoc(orgRef);
+        const orgName = orgDoc.data().Name;
+
+        let downloadURL = ""
+        if (image) {
+            downloadURL = await uploadImage(image, `${orgName}/${name}`);
+        }
 
         await setDoc(eventsRef, {
             id: eventsRef.id,
-            Image: image || "",
+            Image: downloadURL,
             Name: name,
             Location: location,
             Time: time,
-            numGoing: 0,
-            going: [],
+            Drivers: [],
+            Riders: [],
         });
 
         // update home page when an org is created
@@ -411,6 +418,7 @@ const getEvent = async (orgId, eventId) => {
 }
 
 // get the rides of an org's event
+// TODOOO ******************************************************************************************
 const getRides = async (orgId, eventId) => {
     try {
         // get event docs from organization subcollection
@@ -477,6 +485,35 @@ const updateOrg = async (orgId, updates) => {
         });
     } catch (error) {
         console.error("Error updating org", error);
+    }
+};
+
+// updates event given the updates
+const updateEvent = async (orgId, eventId, updates) => {
+    try {
+        // get event doc from organization subcollection
+        const eventDoc = await getEvent(orgId, eventId);
+        const eventRef = eventDoc.ref;
+        const { updatedDrivers, updatedRiders, Name, Time, Image } = updates;
+
+        const driverRefs = updatedDrivers.map(driver => {
+            return typeof driver === 'string' ? doc(firestore, "users", driver) : driver;
+        });
+
+        let downloadURL = ""
+        if (Image) {
+            downloadURL = await uploadImage(Image, 'eventPfps');
+        }
+
+        await updateDoc(eventRef, {
+            Drivers: driverRefs,
+            Riders: updatedRiders,
+            ...(Name && { Name }),
+            ...(Time && { Time }),
+            ...(downloadURL && { Image: downloadURL }),
+        });
+    } catch (error) {
+        console.error("Error updating event", error);
     }
 };
 
@@ -559,6 +596,7 @@ export {
     getRides,
     updateUser,
     updateOrg,
+    updateEvent,
     uploadImage,
     removeUserFromOrg,
     getOrgPeople,

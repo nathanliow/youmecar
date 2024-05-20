@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Route, Routes, BrowserRouter } from 'react-router-dom';
 import { NotFoundPage } from './pages/NotFoundPage'
 import LoginPage from './pages/LoginPage'
-import TestPage from './pages/TestPage'
 import HomePage from './pages/HomePage'
 import ProfilePage from './pages/ProfilePage'
 import OrgPage from './pages/OrgPage'
@@ -16,11 +15,10 @@ export const Pages = () => {
                 <Route path="/" element={<LoginPage/>}/>
                 <Route path="/home" element={<HomePage/>}/>
                 <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/test" element={<TestPage/>}/>
                 <Route path="/:orgId" element={<OrgPage />} />
                 <Route path="/:orgId/:eventId" element={<EventPage />} />
                 <Route path="edit/:orgId" element={<OrgEditPage />} />
-                {/* <Route path="edit/:orgId/:eventId" element={<EventEditPage />} /> */}
+                <Route path="edit/:orgId/:eventId" element={<EventEditPage />} />
                 
                 {/* <Route element={<NotFoundPage/>}/> */}
             </Routes>

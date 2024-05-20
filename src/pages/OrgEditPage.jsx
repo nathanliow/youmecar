@@ -289,7 +289,6 @@ function OrgEditPage() {
                         value={orgCode}
                         onChange={(e) => handleInputChange(setOrgCode, e.target.value, 'Code')}
                     />
-                    <Divider/>
                 </VStack>
                 <Spacer/>
             </Box>

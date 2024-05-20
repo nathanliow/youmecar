@@ -14,7 +14,7 @@ import { ChevronRightIcon } from '@chakra-ui/icons'
 import { getUsersInfo } from '../../Firebase'
 import { useNavigate } from 'react-router-dom';
 
-function EventCard({ orgId, eventId, eventImage, name, location, time, numGoing, going }) {
+function EventCard({ orgId, eventId, eventImage, name, location, time, drivers, riders }) {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
@@ -41,13 +41,13 @@ function EventCard({ orgId, eventId, eventImage, name, location, time, numGoing,
 
     useEffect(() => {
         const fetchUsers = async () => {
-            const avatarMembers = going.slice(0, 3);
+            const avatarMembers = riders.concat(drivers).slice(0, 3);
             const users = await getUsersInfo(avatarMembers);
             setAvatarUsers(users);
         };
 
         fetchUsers();
-    }, [going]);
+    }, [riders, drivers]);
 
     return (
         <Card
@@ -122,7 +122,7 @@ function EventCard({ orgId, eventId, eventImage, name, location, time, numGoing,
                                     ))}
                                 </div>
                                 <div>
-                                    <span style={{ fontWeight: 'bold' }}>{numGoing}</span> going
+                                    <span style={{ fontWeight: 'bold' }}>{riders.concat(drivers).length}</span> going
                                 </div>
                             </div>
                         </Text>

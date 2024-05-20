@@ -72,7 +72,7 @@ function OrgPage() {
         <SearchBar onSearch={setSearchQuery}/>
         <div style={{ maxHeight: isAdmin ? '70vh' : '80vh', overflowY: 'auto', marginTop: '20px', paddingLeft: '20px', scrollbarWidth: 'none'}}>
             {filteredEvents.map((event, index) => (
-                event && <EventCard key={index} orgId={orgId} eventId={event.id} eventImage={event.Image} name={event.Name} location={event.Location} time={event.Time} numGoing={event.numGoing} going={event.going}/>
+                event && <EventCard key={index} orgId={orgId} eventId={event.id} eventImage={event.Image} name={event.Name} location={event.Location} time={event.Time} numGoing={event.numGoing} drivers={event.Drivers} riders={event.Riders}/>
             ))}
         </div>
         {isAdmin && 
