@@ -50,17 +50,17 @@ function OrgPage() {
 
     useEffect(() => {
         async function fetchOrg() {
-        try {
-            const orgDoc = await getOrg(orgId);
-            const uid = (JSON.parse(localStorage.getItem('currentUser'))).uid;
-            const adminPromises = orgDoc.data().Admins.map(ref => getUser(ref));
-            const adminDocs = await Promise.all(adminPromises);
-            const adminUIDs = adminDocs.map(doc => doc.data().uid);
-            setOrg(orgDoc.data());
-            setIsAdmin(adminUIDs.includes(uid))
-        } catch (error) {
-            console.error('Error fetching org:', error);
-        }
+            try {
+                const orgDoc = await getOrg(orgId);
+                const uid = (JSON.parse(localStorage.getItem('currentUser'))).uid;
+                const adminPromises = orgDoc.data().Admins.map(ref => getUser(ref));
+                const adminDocs = await Promise.all(adminPromises);
+                const adminUIDs = adminDocs.map(doc => doc.data().uid);
+                setOrg(orgDoc.data());
+                setIsAdmin(adminUIDs.includes(uid))
+            } catch (error) {
+                console.error('Error fetching org:', error);
+            }
         }
         fetchOrg();
     }, []);

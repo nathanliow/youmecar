@@ -20,7 +20,7 @@ import {
     Switch,
 } from '@chakra-ui/react'
 import EventNavbar from '.././components/Navbar/EventNavbar.jsx'
-import { getOrg, getUser, getUsersInfo, updateEvent, getUserRef, getOrgPeople, getEvent } from '.././Firebase'
+import { getOrg, getUser, getUsersInfo, updateEvent, getUserRef, handleUpdateRides, getEvent } from '.././Firebase'
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
@@ -34,7 +34,6 @@ function EventEditPage() {
     const [eventTime, setEventTime] = useState('');
     const [people, setPeople] = useState([]);
     const [drivers, setDrivers] = useState([]);
-    const [riders, setRiders] = useState([]);
     const [event, setEvent] = useState('');
     const [changes, setChanges] = useState([]);
     const [eventImage, setEventImage] = useState(null);
@@ -119,8 +118,8 @@ function EventEditPage() {
         });
     };
 
+    // todo
     const saveChanges = async () => {
-        const alphanumericRegex = /^[a-zA-Z0-9]+$/;
         try {
             // check if there are even any changes
             if (changes.length === 0) {
@@ -138,6 +137,8 @@ function EventEditPage() {
             let updatedDrivers = eventData.Drivers || [];
             let updatedRiders = eventData.Riders || [];
             let updatedFields = {};
+            let addedDrivers = [];
+            let removedDrivers = [];
 
             changes.forEach(change => {
                 if (change.uid) {
@@ -147,11 +148,13 @@ function EventEditPage() {
                             updatedDrivers.push(driverRef);
                             updatedRiders = updatedRiders.filter(rider => rider.id !== change.uid);
                         }
+                        addedDrivers.push(driverRef);
                     } else {
                         updatedDrivers = updatedDrivers.filter(driver => driver.id !== change.uid);
                         if (!updatedRiders.some(rider => rider.id === change.uid)) {
                             updatedRiders.push(driverRef);
                         }
+                        removedDrivers.push(driverRef);
                     }
                 } else {
                     updatedFields[change.field] = change.value;
@@ -163,6 +166,8 @@ function EventEditPage() {
                 updatedDrivers: updatedDrivers,
                 updatedRiders: updatedRiders,
             });
+
+            await handleUpdateRides(orgId, eventId, addedDrivers, removedDrivers);
 
             setChanges([]);
 
@@ -180,7 +185,7 @@ function EventEditPage() {
 
             toast({
                 title: "Changes saved",
-                description: "Changes have been saved and updated.",
+                description: "Changes have been saved.",
                 status: "success",
                 duration: 5000,
                 isClosable: true,

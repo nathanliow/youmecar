@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { 
     useTheme, 
     useColorMode, 
@@ -19,19 +19,22 @@ function HomePage() {
     const [activeOrgs, setActiveOrgs] = useState([]);
     const [filteredOrgs, setFilteredOrgs] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const hasFetchedOrgs = useRef(false);
 
     const { isOpen: isJoinModalOpen, onOpen: onJoinModalOpen, onClose: onJoinModalClose } = useDisclosure();
     const { isOpen: isCreateModalOpen, onOpen: onCreateModalOpen, onClose: onCreateModalClose } = useDisclosure();
 
     useEffect(() => {
         async function fetchActiveOrgs() {
-        try {
-            const orgDocs = await getActiveOrgs();
-
-            setActiveOrgs(orgDocs.map(doc => doc.data()));
-        } catch (error) {
-            console.error('Error fetching active organizations:', error);
-        }
+            if (!hasFetchedOrgs.current) {
+                try {
+                    const orgDocs = await getActiveOrgs();
+                    setActiveOrgs(orgDocs.map(doc => ({ id: doc.id, ...doc.data() })));
+                    hasFetchedOrgs.current = true; 
+                } catch (error) {
+                    console.error('Error fetching active organizations:', error);
+                }
+            }
         }
         fetchActiveOrgs();
     }, []);

@@ -57,7 +57,7 @@ function EventNavbar({ eventName, navigateTo }) {
                     <Text noOfLines={1} marginTop='24px' marginBottom='24px' style={{color: textPrimary, fontWeight: 'bold'}}>{eventName}</Text>
                 )}
             </div>
-            <Avatar name={userInfo && userInfo.name} size='md' src={userInfo && userInfo.pfp} bg={secondary} onClick={handleProfileClick} style={{ cursor: 'pointer' }}/>
+            <Avatar name={userInfo && userInfo.Name} size='md' src={userInfo && userInfo.Pfp} bg={secondary} onClick={handleProfileClick} style={{ cursor: 'pointer' }}/>
         </div>
         <ProfileDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose} userInfo={userInfo}/>
       </>

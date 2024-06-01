@@ -11,9 +11,9 @@ import {
     useTheme,
     useColorMode
   } from '@chakra-ui/react'
-  import { removeUserFromOrg } from './.././Firebase'  
+import { leaveOrg } from './.././Firebase'  
 
-function RemoveUserAlert({ isOpen, onClose, name, orgId, uid, setPeople }) {
+function RemoveOrgAlert({ isOpen, onClose, orgName, orgId, uid, setActiveOrgs }) {
     const theme = useTheme();
     const { colorMode } = useColorMode();
     const toast = useToast();
@@ -21,20 +21,20 @@ function RemoveUserAlert({ isOpen, onClose, name, orgId, uid, setPeople }) {
 	const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
 	const overlayColor = colorMode === "light" ? theme.colors.overlay.light : theme.colors.overlay.dark;
 
-    const removeUser = async () => {
+    const removeOrg = async () => {
         try {
             const loadingToast = toast({
-				title: `Removing ${name}`,
+				title: `Leaving ${orgName}`,
 				description: 'Please wait...',
 				status: 'info',
 				duration: null, 
 				isClosable: false,
 			});
-            const removed = await removeUserFromOrg(orgId, uid, setPeople);
+            const removed = await leaveOrg(orgId, uid, setActiveOrgs);
             if (removed) {
                 toast.close(loadingToast);
                 toast({
-                    title: `Successfully removed ${name}!`,
+                    title: `Successfully left ${orgName}!`,
                     status: 'success',
                     duration: 5000,
                     isClosable: true,
@@ -43,7 +43,7 @@ function RemoveUserAlert({ isOpen, onClose, name, orgId, uid, setPeople }) {
             } else {
                 toast.close(loadingToast);
                 toast({
-                    title: `Failed to remove ${name}.`,
+                    title: `Failed to leave ${orgName}.`,
                     status: 'error',
                     duration: 5000,
                     isClosable: true,
@@ -65,16 +65,16 @@ function RemoveUserAlert({ isOpen, onClose, name, orgId, uid, setPeople }) {
           <AlertDialogOverlay bg={overlayColor}/>
   
           <AlertDialogContent background={primary} color={textPrimary} maxWidth='90vw'>
-            <AlertDialogHeader>Remove user?</AlertDialogHeader>
+            <AlertDialogHeader>Leave organization?</AlertDialogHeader>
             <AlertDialogCloseButton />
             <AlertDialogBody >
-              Are you sure you want to remove {name}?
+              Are you sure you want to leave {orgName}?
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button onClick={onClose}>
                 No
               </Button>
-              <Button onClick={removeUser} colorScheme='red' ml={3}>
+              <Button onClick={removeOrg} colorScheme='red' ml={3}>
                 Yes
               </Button>
             </AlertDialogFooter>
@@ -84,4 +84,4 @@ function RemoveUserAlert({ isOpen, onClose, name, orgId, uid, setPeople }) {
     )
   }
 
-export default RemoveUserAlert;
+export default RemoveOrgAlert;

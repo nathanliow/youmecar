@@ -38,6 +38,12 @@ function EventCreateModal({ isOpen, onClose, orgId, setEvents }) {
         setIsNameInvalid(false);
     }
 
+    const formatDate = (timeString) => {
+        const date = new Date(timeString);
+        const formattedDate = `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`;
+        return formattedDate;
+    };
+
     const createEvent = async () => {
         try {
 			const loadingToast = toast({
@@ -51,10 +57,10 @@ function EventCreateModal({ isOpen, onClose, orgId, setEvents }) {
 			if (eventName && eventName.length > 0) {
                 const created = await handleCreateEvent(orgId, eventImage, eventName, eventLocation, eventTime, setEvents);
                 if (created) {
-                    toast.close(loadingToast);
+                    toast.close(loadingToast);                    
                     toast({
                         title: 'Event created',
-                        description: `'${eventName}' at '${eventLocation}' on '${eventTime}' created successfully!`,
+                        description: `'${eventName}' at '${eventLocation}' on '${formatDate(eventTime)}' created successfully!`,
                         status: 'success',
                         duration: 5000,
                         isClosable: true,

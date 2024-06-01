@@ -9,6 +9,7 @@ import {
     useTheme,
     useDisclosure,
     useColorMode,
+    Avatar,
 } from '@chakra-ui/react'
 import {
     List,
@@ -18,9 +19,10 @@ import {
 import { IoMdPerson } from "react-icons/io";
 import RideDrawer from '../Drawer/RideDrawer'
 
-function RideCard({ rideImage, driver, time, numRiders, maxRiders, riders }) {
+function RideCard({ rideImage, driver, time, numRiders, maxRiders, ridersNames, riderPfps }) {
     const theme = useTheme();
     const { colorMode } = useColorMode();
+    const primary = colorMode === "light" ? theme.colors.primary.light : theme.colors.primary.dark;
     const textPrimary = colorMode === "light" ? theme.colors.textPrimary.light : theme.colors.textPrimary.dark;
     const textSecondary = colorMode === "light" ? theme.colors.textSecondary.light : theme.colors.textSecondary.dark;
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -29,6 +31,17 @@ function RideCard({ rideImage, driver, time, numRiders, maxRiders, riders }) {
         // Handle click action here
         onOpen();
         console.log("Card clicked!");
+    };
+
+    const formatTime = (timeString) => {
+        const date = new Date(timeString);
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = hours % 12 || 12;
+        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+        const formattedTime = `${formattedHours}:${formattedMinutes} ${ampm}`;
+        return [formattedTime];
     };
 
     return (
@@ -46,7 +59,7 @@ function RideCard({ rideImage, driver, time, numRiders, maxRiders, riders }) {
             <Image
                 objectFit='cover'
                 maxW='30%'
-                src="/cars/dark_suv.png"
+                src={rideImage}
                 alt='Car Image'
                 fallbackSrc='/cars/light_sedan.png' 
             />
@@ -55,6 +68,8 @@ function RideCard({ rideImage, driver, time, numRiders, maxRiders, riders }) {
                 <CardHeader 
                     pt='10px' 
                     pb='5px' 
+                    pl='5px'
+                    pr='5px'
                 >
                     <Text 
                         align='left' 
@@ -68,13 +83,15 @@ function RideCard({ rideImage, driver, time, numRiders, maxRiders, riders }) {
 
                 <CardBody 
                     pt='0px' 
+                    pl='5px'
+                    pr='5px'
                 >
                     <Text 
                         align='left' 
                         fontSize='sm' 
                         color={textSecondary}
                     >
-                        Pick up: <span style={{ fontWeight: 'bold' }}>{time}</span>
+                        Pick up: <span style={{ fontWeight: 'bold' }}>{formatTime(time)}</span>
                     </Text>
                 </CardBody>
             </Stack>
@@ -100,7 +117,7 @@ function RideCard({ rideImage, driver, time, numRiders, maxRiders, riders }) {
                     pt='0px' 
                     pl='4px' 
                     pb='10px' 
-                    pr='20px'
+                    pr='10px'
                 >
                     <List 
                         align='left' 
@@ -108,9 +125,9 @@ function RideCard({ rideImage, driver, time, numRiders, maxRiders, riders }) {
                         color={textSecondary}
                         fontWeight='bold'
                     >
-                        {riders.map((rider, index) => (
-                            <ListItem key={index}>
-                                {/* <ListIcon as={ProfileIcon1} color={textPrimary} /> */}
+                        {ridersNames.map((rider, index) => (
+                            <ListItem key={index} display="flex" alignItems="center">
+                                <Avatar name={rider} src={riderPfps[index]} width='15px' height='15px' bg={primary} mr={2} />
                                 {rider}
                             </ListItem>
                         ))}

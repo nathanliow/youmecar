@@ -47,16 +47,16 @@ function ProfileDrawer({ isOpen, onClose, userInfo }) {
         <DrawerHeader></DrawerHeader>
         <DrawerBody display="flex" flexDirection="column" alignItems="center">
           <div style={{ marginTop: '30px' }}> 
-            <Avatar name={userInfo && userInfo.name} size='xl' src={userInfo && userInfo.pfp} bg={secondary} />
+            <Avatar name={userInfo && userInfo.Name} size='xl' src={userInfo && userInfo.Pfp} bg={secondary} />
           </div>
           <div style={{ marginTop: '10px', fontSize: '24px' }}> 
-          {userInfo && userInfo.name}
+          {userInfo && userInfo.Name}
           </div>
           <div style={{ fontSize: '16px' }}> 
-            {userInfo && userInfo.email}
+            {userInfo && userInfo.Email}
           </div>
           <div style={{ fontSize: '16px' }}> 
-            <span style={{ fontWeight: 'bold' }}>{userInfo && userInfo.numFriends}</span> Friends
+            <span style={{ fontWeight: 'bold' }}>{userInfo && userInfo.Friends.length}</span> Friends
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', marginTop: '30px', fontSize: '20px', alignSelf: 'flex-start', marginLeft: '10px' }}>
             <button onClick={handleProfileClick} style={{ display: 'flex', alignItems: 'center' }}>

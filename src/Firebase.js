@@ -223,14 +223,14 @@ const getActiveUserInfo = async () => {
         const numFriends = userDoc.data().Friends.length;
     
         // Return user information including the number of friends
-        return { name, email, pfp, numFriends };
+        return userDoc.data();
     } catch (error) {
         console.error('Error retrieving active user info:', error);
         throw error; // Rethrow the error to handle it elsewhere if needed
     }
 };
 
-// uploads an image into firebase storage and returns the download URL to the image (for organization images)
+// uploads an image into firebase storage and returns the download URL to the image
 const uploadImage = async (image, path) => {
     const storage = getStorage();
     const storageRef = ref(storage, `images/${path}/${image.name}`);
@@ -242,7 +242,7 @@ const uploadImage = async (image, path) => {
     return downloadURL;
   };
 
-// get user info of a given array of user references
+// get user info of a given array of user references (returns array of Doc.data)
 const getUsersInfo = async (references) => {
     try {
         const users = [];
@@ -343,7 +343,7 @@ const handleAddUserToOrg = async (orgId, email, setPeople) => {
     }
 }
 
-// get a user based on single ref
+// get a user based on single ref (returns Doc)
 const getUser = async (ref) => {
     try {
         // get event docs from organization subcollection
@@ -355,7 +355,7 @@ const getUser = async (ref) => {
     }
 }
 
-// get a user ref given an id
+// get a user ref given an id (returns Reference)
 const getUserRef = (uid) => {
     try {
         return doc(firestore, "users", uid);
@@ -377,7 +377,7 @@ const getOrg = async (orgId) => {
     }
 }
 
-// get the events of an org
+// get the events of an org (returns doc.data)
 const getEvents = async (orgId) => {
     try {
         // get event docs from organization subcollection
@@ -417,24 +417,86 @@ const getEvent = async (orgId, eventId) => {
     }
 }
 
-// get the rides of an org's event
-// TODOOO ******************************************************************************************
-const getRides = async (orgId, eventId) => {
+// get the locations of an org (returns doc.data)
+const getLocations = async (orgId, eventId) => {
     try {
         // get event docs from organization subcollection
         const orgRef = doc(firestore, "organizations", orgId);
-        const eventsSnapshot = await getDocs(query(collection(orgRef, 'events')));
+        const eventQuery = await getDocs(query(collection(orgRef, 'events'), where("id", "==", eventId)));
+        const eventRef = (eventQuery.docs[0]).ref;
+        const locationsSnapshot = await getDocs(query(collection(eventRef, 'PickupLocations')));
 
         // if empty, return empty early
-        if (eventsSnapshot.empty) {
+        if (locationsSnapshot.empty) {
             return [];
         }
         
-        const events = eventsSnapshot.docs.map((doc) => {
+        const locations = locationsSnapshot.docs.map((doc) => {
             return { id: doc.id, ...doc.data() };
         });
 
-        return events;
+        return locations;
+    } catch (error) {
+        console.error("Error fetching events:", error);
+    }
+}
+
+// get the rides of an org's event
+// todo
+const handleUpdateRides = async (orgId, eventId, addedDrivers, removedDrivers) => {
+    try {
+        // get event doc from organization subcollection
+        const eventDoc = await getEvent(orgId, eventId);
+        const eventRef = eventDoc.ref;
+        const ridesRef = collection(eventRef, 'Rides');
+        const ridesDocs = await getDocs(query(ridesRef));
+        const drivers = eventDoc.data().Drivers;
+
+        for (const rideDoc of ridesDocs.docs) {
+            const rideData = rideDoc.data();
+            const rideRef = rideDoc.ref;
+            const driverRef = rideData.Driver;
+
+            // remove ride from pickupLocation doc's rides array
+            const pickupLocationRef = rideData.PickupLocation;
+            const pickupLocationDoc = await getDoc(pickupLocationRef);
+            const updatedRidesArray = [];
+
+            // remove ride from pickupLocation doc's rides array
+            if (removedDrivers.some(removedDriver => removedDriver.id === driverRef.id)) {
+                updatedRidesArray = pickupLocationDoc.data().Rides.filter(ref => ref.id !== rideRef.id);
+            }
+
+            // add ride from pickupLocation doc's rides array
+
+            await updateDoc(pickupLocationRef, { Rides: updatedRidesArray });
+        }
+
+        return true;
+    } catch (error) {
+        console.error("Error updating rides subcollection:", error);
+        return false;
+    }
+}
+
+// get the rides of an org's event
+const getRides = async (orgId, eventId, pickupLocationId) => {
+    try {
+        // get event doc from organization subcollection
+        const eventDoc = await getEvent(orgId, eventId);
+        const eventRef = eventDoc.ref;
+        const locationQuery = await getDocs(query(collection(eventRef, 'PickupLocations'), where("id", "==", pickupLocationId)));
+        const pickupLocationDoc = locationQuery.docs[0];
+
+        const rideRefs = pickupLocationDoc.data().Rides;
+
+        const rides = [];
+        for (const rideRef of rideRefs) {
+            const rideDoc = await getDoc(rideRef);
+            rides.push({ id: rideDoc.id, ...rideDoc.data() });
+        }
+
+        return rides;
     } catch (error) {
         console.error("Error fetching rides:", error);
     }
@@ -444,7 +506,7 @@ const getRides = async (orgId, eventId) => {
 const updateUser = async (uid, updates) => {
     try {
         const userRef = doc(firestore, "users", uid);
-        const { Name, Pfp } = updates;
+        const { Name, Pfp, Car } = updates;
 
         let downloadURL = ""
         if (Pfp) {
@@ -454,6 +516,7 @@ const updateUser = async (uid, updates) => {
         await updateDoc(userRef, {
             ...(Name && { Name }),
             ...(Pfp && { Pfp: downloadURL }),
+            ...(Car && { Car: Car }),
         });
 
     } catch (error) {
@@ -517,7 +580,7 @@ const updateEvent = async (orgId, eventId, updates) => {
     }
 };
 
-// removes a user from an org 
+// removes a user from an org (org edit page)
 const removeUserFromOrg = async (orgId, uid, setPeople) => {
     try {
         // Fetch the organization document
@@ -549,11 +612,58 @@ const removeUserFromOrg = async (orgId, uid, setPeople) => {
             ActiveOrgs: updatedActiveOrgs,
         });
 
-        // update the org edit screen after adding their email
+        // update the org edit screen
         const people = await getOrgPeople(orgId);
         setPeople(people);
         
-        console.log(`User ${uid} has been successfully removed from organization ${orgId}`);
+        return true;
+    } catch (error) {
+        console.error('Error removing user from organization:', error);
+        return false;
+    }
+};
+
+// removes current user user from an org (profile edit page)
+const leaveOrg = async (orgId, uid, setActiveOrgs) => {
+    try {
+        // Fetch the organization document
+        const orgRef = doc(firestore, "organizations", orgId);
+        const orgDoc = await getDoc(orgRef);
+        const orgData = orgDoc.data();
+
+        // Fetch the user document
+        const userRef = doc(firestore, "users", uid);
+        const userDoc = await getUser(userRef);
+        const userData = userDoc.data();
+
+        // Remove the user from the organization's Admins and Members arrays
+        const updatedAdmins = orgData.Admins.filter(adminRef => adminRef.id !== uid);
+        const updatedMembers = orgData.Members.filter(memberRef => memberRef.id !== uid);
+
+        // Update the organization's Admins and Members arrays
+        await updateDoc(orgRef, {
+            Admins: updatedAdmins,
+            Members: updatedMembers,
+            numMembers: increment(-1),
+        });
+
+        // Remove the organization from the user's ActiveOrgs array
+        const updatedActiveOrgs = userData.ActiveOrgs.filter(orgRef => orgRef.id !== orgId);
+
+        // Update the user's ActiveOrgs array
+        await updateDoc(userRef, {
+            ActiveOrgs: updatedActiveOrgs,
+        });
+
+        const updatedActiveOrgsData = await Promise.all(
+            updatedActiveOrgs.map(async (orgRef) => {
+                const orgDoc = await getDoc(orgRef);
+                return { id: orgDoc.id, ...orgDoc.data() };
+            })
+        );
+        // update the profile edit screen
+        setActiveOrgs(updatedActiveOrgsData);
+        
         return true;
     } catch (error) {
         console.error('Error removing user from organization:', error);
@@ -588,16 +698,19 @@ export {
     getActiveUserInfo,
     getUsersInfo,
     handleCreateEvent,
+    handleUpdateRides,
     getUserRef,
     getUser,
     getOrg,
     getEvent,
     getEvents,
     getRides,
+    getLocations,
     updateUser,
     updateOrg,
     updateEvent,
     uploadImage,
     removeUserFromOrg,
+    leaveOrg,
     getOrgPeople,
 };

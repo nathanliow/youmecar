@@ -32,7 +32,7 @@ function EventCard({ orgId, eventId, eventImage, name, location, time, drivers, 
         const hours = date.getHours();
         const minutes = date.getMinutes();
         const ampm = hours >= 12 ? 'PM' : 'AM';
-        const formattedHours = hours % 12 || 12; // Convert 0 to 12
+        const formattedHours = hours % 12 || 12;
         const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
         const formattedDate = `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`;
         const formattedTime = `${formattedHours}:${formattedMinutes} ${ampm}`;
@@ -100,7 +100,7 @@ function EventCard({ orgId, eventId, eventImage, name, location, time, drivers, 
                             fontSize='sm' 
                             color={textSecondary}
                         >
-                            Pick up: <span style={{ fontWeight: 'bold' }}>{time ? formatDate(time)[1] : 'TBD'}</span>
+                            Time: <span style={{ fontWeight: 'bold' }}>{time ? formatDate(time)[1] : 'TBD'}</span>
                         </Text>
                         <Text 
                             align='left' 

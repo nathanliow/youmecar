@@ -215,7 +215,7 @@ function OrgEditPage() {
 
             toast({
                 title: "Changes saved",
-                description: "Changes have been saved and updated.",
+                description: "Changes have been saved.",
                 status: "success",
                 duration: 5000,
                 isClosable: true,
@@ -315,7 +315,7 @@ function OrgEditPage() {
                                         />
                                         <IconButton
                                             variant='back'
-                                            aria-label='Back Button'
+                                            aria-label='Remove Button'
                                             icon={<CiCircleRemove/>}
                                             onClick={() => handleRemovePerson(person.uid, person.Name)}
                                         />

@@ -13,10 +13,10 @@ Rider:
  - profileIcon
 
 Ride:
- - driver
- - pickUpTime
- - numRiders
- - maxRiders
+ - Driver
+ - PickupTime
+ - NumRiders
+ - MaxRiders
  - Riders[]
 
 LocationDropdown:
